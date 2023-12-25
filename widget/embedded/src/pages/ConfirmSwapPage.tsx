@@ -21,7 +21,6 @@ import {
 } from '@rango-dev/ui';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
 
 import { getRequiredWallets } from '../components/ConfirmWalletsModal/ConfirmWallets.helpers';
 import { ConfirmWalletsModal } from '../components/ConfirmWalletsModal/ConfirmWalletsModal';
@@ -31,6 +30,8 @@ import { navigationRoutes } from '../constants/navigationRoutes';
 import { getQuoteUpdateWarningMessage } from '../constants/warnings';
 import { QuoteInfo } from '../containers/QuoteInfo';
 import { useConfirmSwap } from '../hooks/useConfirmSwap';
+import { useNavigateTo } from '../hooks/useNavigateBack';
+import { useUpdateQuoteParams } from '../hooks/useUpdateQuoteParams';
 import { useAppStore } from '../store/AppStore';
 import { useQuoteStore } from '../store/quote';
 import { useUiStore } from '../store/ui';
@@ -80,14 +81,14 @@ export function ConfirmSwapPage() {
   //TODO: move component's logics to a custom hook
   const {
     quote,
-    setInputAmount,
     selectedWallets,
     quoteWalletsConfirmed,
     setQuoteWalletConfirmed,
     customDestination,
     quoteWarningsConfirmed,
   } = useQuoteStore();
-  const navigate = useNavigate();
+  const { setInputAmount } = useUpdateQuoteParams();
+  const navigate = useNavigateTo();
   const [dbErrorMessage, setDbErrorMessage] = useState<string>('');
 
   const { connectedWallets } = useWalletsStore();

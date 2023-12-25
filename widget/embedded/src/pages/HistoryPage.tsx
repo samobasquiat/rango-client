@@ -4,12 +4,12 @@ import { i18n } from '@lingui/core';
 import { useManager } from '@rango-dev/queue-manager-react';
 import { Divider, NotFound, styled } from '@rango-dev/ui';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { Layout } from '../components/Layout';
 import { SearchInput } from '../components/SearchInput';
 import { SwapsGroup } from '../components/SwapsGroup';
 import { NotFoundContainer } from '../components/SwapsGroup/SwapsGroup.styles';
+import { useNavigateTo } from '../hooks/useNavigateBack';
 import { useUiStore } from '../store/ui';
 import { groupSwapsByDate } from '../utils/date';
 import { containsText } from '../utils/numbers';
@@ -47,7 +47,7 @@ const isStepContainsText = (steps: PendingSwapStep[], value: string) => {
 
 export function HistoryPage() {
   const setSelectedSwap = useUiStore.use.setSelectedSwap();
-  const navigate = useNavigate();
+  const navigate = useNavigateTo();
   const { manager, state } = useManager();
   const list: PendingSwap[] = getPendingSwaps(manager).map(({ swap }) => swap);
   const [searchedFor, setSearchedFor] = useState<string>('');

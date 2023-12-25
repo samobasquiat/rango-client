@@ -16,10 +16,10 @@ import {
   WalletIcon,
 } from '@rango-dev/ui';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { getQuoteErrorMessage } from '../../constants/errors';
 import { getQuoteUpdateWarningMessage } from '../../constants/warnings';
+import { useNavigateTo } from '../../hooks/useNavigateBack';
 import { useAppStore } from '../../store/AppStore';
 import { useQuoteStore } from '../../store/quote';
 import { useWalletsStore } from '../../store/wallets';
@@ -240,7 +240,7 @@ export function ConfirmWalletsModal(props: PropTypes) {
 
   const modalContainer = document.querySelector('#swap-box') as HTMLDivElement;
 
-  const navigate = useNavigate();
+  const navigate = useNavigateTo();
   return (
     <Modal
       open={open}

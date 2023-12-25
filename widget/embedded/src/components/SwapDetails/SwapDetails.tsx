@@ -20,7 +20,6 @@ import {
 import { useWallets } from '@rango-dev/wallets-react';
 import { PendingSwapNetworkStatus } from 'rango-types';
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import {
   GAS_FEE_MAX_DECIMALS,
@@ -32,6 +31,7 @@ import {
   USD_VALUE_MAX_DECIMALS,
   USD_VALUE_MIN_DECIMALS,
 } from '../../constants/routing';
+import { useNavigateTo } from '../../hooks/useNavigateBack';
 import { useAppStore } from '../../store/AppStore';
 import { useNotificationStore } from '../../store/notification';
 import { useQuoteStore } from '../../store/quote';
@@ -73,7 +73,7 @@ export function SwapDetails(props: SwapDetailsProps) {
   const blockchains = useAppStore().blockchains();
   const tokens = useAppStore().tokens();
   const retry = useQuoteStore.use.retry();
-  const navigate = useNavigate();
+  const navigate = useNavigateTo();
   const [_, handleCopy] = useCopyToClipboard(RESET_INTERVAL);
   const listRef = useRef<HTMLDivElement | null>(null);
   const [modalState, setModalState] = useState<ModalState>(null);

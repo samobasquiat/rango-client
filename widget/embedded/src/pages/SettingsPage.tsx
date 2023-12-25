@@ -11,19 +11,19 @@ import {
   Typography,
 } from '@rango-dev/ui';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { Layout } from '../components/Layout';
 import { SettingsContainer } from '../components/SettingsContainer';
 import { Slippage } from '../components/Slippage';
 import { SlippageTooltipContainer as TooltipContainer } from '../components/Slippage/Slippage.styles';
 import { navigationRoutes } from '../constants/navigationRoutes';
+import { useNavigateTo } from '../hooks/useNavigateBack';
 import { useAppStore } from '../store/AppStore';
 import { getContainer } from '../utils/common';
 import { getUniqueSwappersGroups, isFeatureHidden } from '../utils/settings';
 
 export function SettingsPage() {
-  const navigate = useNavigate();
+  const navigate = useNavigateTo();
   const { theme } = useAppStore().config;
   const fetchStatus = useAppStore().fetchStatus;
   const swappers = useAppStore().swappers();

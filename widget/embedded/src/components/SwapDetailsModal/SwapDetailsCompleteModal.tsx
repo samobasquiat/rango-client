@@ -10,7 +10,8 @@ import {
   Typography,
 } from '@rango-dev/ui';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+
+import { useNavigateTo } from '../../hooks/useNavigateBack';
 
 export function SwapDetailsCompleteModal(props: CompleteModalPropTypes) {
   const {
@@ -25,7 +26,7 @@ export function SwapDetailsCompleteModal(props: CompleteModalPropTypes) {
     description,
     diagnosisUrl,
   } = props;
-  const navigate = useNavigate();
+  const navigate = useNavigateTo();
 
   return (
     <Modal

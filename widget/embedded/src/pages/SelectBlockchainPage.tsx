@@ -2,7 +2,7 @@ import { i18n } from '@lingui/core';
 import {
   Divider,
   getCountCategories,
-  SelectableCategoryList
+  SelectableCategoryList,
 } from '@rango-dev/ui';
 import React, { useState } from 'react';
 
@@ -10,8 +10,8 @@ import { BlockchainList } from '../components/BlockchainList';
 import { Layout } from '../components/Layout';
 import { SearchInput } from '../components/SearchInput';
 import { useNavigateBack } from '../hooks/useNavigateBack';
+import { useUpdateQuoteParams } from '../hooks/useUpdateQuoteParams';
 import { useAppStore } from '../store/AppStore';
-import { useQuoteStore } from '../store/quote';
 
 interface PropTypes {
   type: 'source' | 'destination';
@@ -22,12 +22,11 @@ export function SelectBlockchainPage(props: PropTypes) {
   const navigateBack = useNavigateBack();
   const [searchedFor, setSearchedFor] = useState<string>('');
   const [blockchainCategory, setBlockchainCategory] = useState<string>('ALL');
-  const setToBlockchain = useQuoteStore.use.setToBlockchain();
-  const setFromBlockchain = useQuoteStore.use.setFromBlockchain();
+  const { setFromBlockchain, setToBlockchain } = useUpdateQuoteParams();
   const fetchStatus = useAppStore().fetchStatus;
 
   const blockchains = useAppStore().blockchains({
-    type: type
+    type: type,
   });
 
   const countActiveCategories = getCountCategories(blockchains);
@@ -37,7 +36,7 @@ export function SelectBlockchainPage(props: PropTypes) {
   return (
     <Layout
       header={{
-        title: i18n.t(`Select Blockchain`)
+        title: i18n.t(`Select Blockchain`),
       }}>
       <Divider size={12} />
 

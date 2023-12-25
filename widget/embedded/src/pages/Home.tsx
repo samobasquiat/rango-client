@@ -1,7 +1,6 @@
 import { i18n } from '@lingui/core';
 import { Button, styled, SwapInput, WarningIcon } from '@rango-dev/ui';
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { HomeButtons } from '../components/HeaderButtons';
 import { Layout } from '../components/Layout';
@@ -17,7 +16,9 @@ import {
   USD_VALUE_MIN_DECIMALS,
 } from '../constants/routing';
 import { QuoteInfo } from '../containers/QuoteInfo';
+import { useNavigateTo } from '../hooks/useNavigateBack';
 import { useSwapInput } from '../hooks/useSwapInput';
+import { useUpdateQuoteParams } from '../hooks/useUpdateQuoteParams';
 import { useAppStore } from '../store/AppStore';
 import { useQuoteStore } from '../store/quote';
 import { useUiStore } from '../store/ui';
@@ -47,7 +48,7 @@ const InputsContainer = styled('div', {
   alignSelf: 'stretch',
 });
 export function Home() {
-  const navigate = useNavigate();
+  const navigate = useNavigateTo();
   const {
     fetch: fetchQuote,
     loading: fetchingQuote,
@@ -59,7 +60,6 @@ export function Home() {
     fromBlockchain,
     toToken,
     toBlockchain,
-    setInputAmount,
     inputAmount,
     inputUsdValue,
     outputAmount,
@@ -68,6 +68,8 @@ export function Home() {
     resetQuoteWallets,
     setQuoteWarningsConfirmed,
   } = useQuoteStore();
+
+  const { setInputAmount } = useUpdateQuoteParams();
 
   const fetchMetaStatus = useAppStore().fetchStatus;
 

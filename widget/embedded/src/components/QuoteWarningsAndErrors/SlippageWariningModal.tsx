@@ -6,9 +6,9 @@ import type {
 import { i18n } from '@lingui/core';
 import { Button, Divider, MessageBox, Modal, Typography } from '@rango-dev/ui';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { navigationRoutes } from '../../constants/navigationRoutes';
+import { useNavigateTo } from '../../hooks/useNavigateBack';
 import { useAppStore } from '../../store/AppStore';
 import { QuoteWarningType } from '../../types';
 import { getContainer } from '../../utils/common';
@@ -23,7 +23,7 @@ type PropsTypes = {
 export function SlippageWarningModal(props: PropsTypes) {
   const { customSlippage, slippage } = useAppStore();
   const { open, onClose, onConfirm, warning } = props;
-  const navigate = useNavigate();
+  const navigate = useNavigateTo();
   const userSlippage = customSlippage ?? slippage;
   return (
     <Modal

@@ -8,9 +8,9 @@ import {
   Typography,
 } from '@rango-dev/ui';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { navigationRoutes } from '../../constants/navigationRoutes';
+import { useNavigateTo } from '../../hooks/useNavigateBack';
 import { useAppStore } from '../../store/AppStore';
 import { useNotificationStore } from '../../store/notification';
 import { useUiStore } from '../../store/ui';
@@ -21,7 +21,7 @@ import { NotificationNotFound } from './NotificationNotFound';
 const MAX_NOTIFICATIONS_DISPLAYED = 4;
 
 export function NotificationContent() {
-  const navigate = useNavigate();
+  const navigate = useNavigateTo();
   const setSelectedSwap = useUiStore.use.setSelectedSwap();
 
   const { getUnreadNotifications } = useNotificationStore();

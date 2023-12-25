@@ -1,23 +1,22 @@
 import type { Asset } from 'rango-sdk';
 
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import { useAppStore } from '../store/AppStore';
 import { useQuoteStore } from '../store/quote';
 import { tokensAreEqual } from '../utils/wallets';
 
+import { useUpdateQuoteParams } from './useUpdateQuoteParams';
+
 export function useSyncStoresWithConfig() {
+  const { fromToken, toToken, fromBlockchain, toBlockchain } = useQuoteStore();
   const {
-    setInputAmount,
-    setToToken,
-    setToBlockchain,
     setFromBlockchain,
     setFromToken,
-    fromToken,
-    toToken,
-    fromBlockchain,
-    toBlockchain,
-  } = useQuoteStore();
+    setToBlockchain,
+    setToToken,
+    setInputAmount,
+  } = useUpdateQuoteParams();
 
   const config = useAppStore().config;
   const fetchMetaStatus = useAppStore().fetchStatus;
@@ -59,7 +58,7 @@ export function useSyncStoresWithConfig() {
    * Using useLayoutEffect causes widget config values to apply first.
    * We may consider replacing this with a better solution in the future.
    */
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (fetchMetaStatus === 'success') {
       const chain = blockchains.find(
         (chain) => chain.name === config?.from?.blockchain
@@ -73,9 +72,9 @@ export function useSyncStoresWithConfig() {
       }
 
       if (token) {
-        setFromToken({ token, meta: { blockchains, tokens } });
+        setFromToken(token);
       } else if (!token && prevConfigFromToken.current) {
-        setFromToken({ token: null });
+        setFromToken(null);
       }
 
       prevConfigFromBlockchain.current = config?.from?.blockchain;
@@ -92,7 +91,7 @@ export function useSyncStoresWithConfig() {
   useEffect(() => {
     if (fromToken && fromTokensConfig) {
       if (!fromTokensConfig.some((token) => tokensAreEqual(token, fromToken))) {
-        setFromToken({ token: null });
+        setFromToken(null);
       }
     }
 
@@ -106,7 +105,7 @@ export function useSyncStoresWithConfig() {
   useEffect(() => {
     if (toToken && toTokensConfig) {
       if (!toTokensConfig.some((token) => tokensAreEqual(token, toToken))) {
-        setToToken({ token: null });
+        setToToken(null);
       }
     }
 
@@ -124,7 +123,7 @@ export function useSyncStoresWithConfig() {
    * Using useLayoutEffect causes widget config values to apply first.
    * We may consider replacing this with a better solution in the future.
    */
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (fetchMetaStatus === 'success') {
       const chain = blockchains.find(
         (chain) => chain.name === config?.to?.blockchain
@@ -138,9 +137,9 @@ export function useSyncStoresWithConfig() {
       }
 
       if (token) {
-        setToToken({ token, meta: { blockchains, tokens } });
+        setToToken(token);
       } else if (!token && prevConfigToToken.current) {
-        setToToken({ token: null });
+        setToToken(null);
       }
 
       prevConfigToBlockchain.current = config?.to?.blockchain;

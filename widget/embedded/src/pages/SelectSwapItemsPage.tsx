@@ -3,14 +3,14 @@ import type { BlockchainMeta, Token } from 'rango-sdk';
 import { i18n } from '@lingui/core';
 import { Divider } from '@rango-dev/ui';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { BlockchainsSection } from '../components/BlockchainsSection';
 import { Layout } from '../components/Layout';
 import { SearchInput } from '../components/SearchInput';
 import { TokenList } from '../components/TokenList/TokenList';
 import { navigationRoutes } from '../constants/navigationRoutes';
-import { useNavigateBack } from '../hooks/useNavigateBack';
+import { useNavigateBack, useNavigateTo } from '../hooks/useNavigateBack';
+import { useUpdateQuoteParams } from '../hooks/useUpdateQuoteParams';
 import { useAppStore } from '../store/AppStore';
 import { useQuoteStore } from '../store/quote';
 import { useWalletsStore } from '../store/wallets';
@@ -22,16 +22,11 @@ interface PropTypes {
 
 export function SelectSwapItemsPage(props: PropTypes) {
   const { type } = props;
-  const navigate = useNavigate();
+  const navigate = useNavigateTo();
   const navigateBack = useNavigateBack();
-  const {
-    fromBlockchain,
-    toBlockchain,
-    setFromToken,
-    setToToken,
-    setFromBlockchain,
-    setToBlockchain,
-  } = useQuoteStore();
+  const { fromBlockchain, toBlockchain } = useQuoteStore();
+  const { setFromBlockchain, setFromToken, setToBlockchain, setToToken } =
+    useUpdateQuoteParams();
   const getBalanceFor = useWalletsStore.use.getBalanceFor();
   const [searchedFor, setSearchedFor] = useState<string>('');
   const { isTokenPinned } = useAppStore();
@@ -63,9 +58,9 @@ export function SelectSwapItemsPage(props: PropTypes) {
 
   const updateToken = (token: Token) => {
     if (type === 'source') {
-      setFromToken({ token, meta: { blockchains, tokens } });
+      setFromToken(token);
     } else {
-      setToToken({ token, meta: { blockchains, tokens } });
+      setToToken(token);
     }
   };
 
