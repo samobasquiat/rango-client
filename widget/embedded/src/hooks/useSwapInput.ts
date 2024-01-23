@@ -46,6 +46,7 @@ export function useSwapInput({
   const { fetch: fetchQuote, cancelFetch } = useFetchQuote();
   const { liquiditySources, enableNewLiquiditySources, features } =
     useAppStore().config;
+  console.log({ refetchQuote });
 
   const tokens = useAppStore().tokens();
   const {
@@ -172,6 +173,8 @@ export function useSwapInput({
 
   useEffect(() => {
     if (fetchStatus !== 'success' || !refetchQuote) {
+      setLoading(false);
+
       return;
     }
     if (!isPositiveNumber(inputAmount) || inputUsdValue?.eq(0)) {
