@@ -141,7 +141,7 @@ export function WalletList(props: PropTypes) {
           walletType: wallet.type,
           chain,
         });
-        const conciseAddress = address ? getConciseAddress(address) : '';
+        const conciseAddress = address ? getConciseAddress(address, 7) : '';
 
         const experimentalChain = isExperimentalChain(blockchains(), chain);
 

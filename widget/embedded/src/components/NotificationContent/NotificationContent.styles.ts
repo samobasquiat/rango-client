@@ -2,8 +2,11 @@ import { styled } from '@rango-dev/ui';
 
 export const Container = styled('div', {
   padding: '$10',
-  width: '350px',
+  width: '295px',
   minHeight: '150px',
+  '@xs': {
+    width: '350px',
+  },
 });
 
 export const List = styled('ul', {
