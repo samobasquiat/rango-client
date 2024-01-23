@@ -1,9 +1,15 @@
-import type { BestRouteResponse, BlockchainMeta } from 'rango-sdk';
+import type {
+  BlockchainMeta,
+  MultiRouteSimulationResult,
+  SimulationResult,
+} from 'rango-sdk';
 
-export function getRequiredWallets(quote: BestRouteResponse | null): string[] {
+export function getRequiredWallets(
+  quote: MultiRouteSimulationResult | SimulationResult | null
+): string[] {
   const wallets: string[] = [];
 
-  quote?.result?.swaps.forEach((swap) => {
+  quote?.swaps.forEach((swap) => {
     const currentStepFromBlockchain = swap.from.blockchain;
     const currentStepToBlockchain = swap.to.blockchain;
     let lastAddedWallet = wallets[wallets.length - 1];

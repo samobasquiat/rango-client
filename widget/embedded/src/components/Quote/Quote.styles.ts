@@ -13,7 +13,6 @@ export const QuoteContainer = styled(Collapsible.Root, {
   overflowY: 'hidden',
   width: '100%',
   borderRadius: '$xm',
-  cursor: 'default',
   variants: {
     recommended: {
       true: {
@@ -24,6 +23,8 @@ export const QuoteContainer = styled(Collapsible.Root, {
         backgroundColor: '$$color',
       },
       false: {
+        cursor: 'pointer',
+
         $$color: '$colors$neutral400',
         [`.${darkTheme} &`]: {
           $$color: '$colors$neutral200',
@@ -45,7 +46,6 @@ export const SummaryContainer = styled('div', {
   alignItems: 'start',
   justifyContent: 'space-between',
   color: '$foreground',
-  cursor: 'pointer',
   boxSizing: 'border-box',
   position: 'relative',
   variants: {
@@ -61,13 +61,17 @@ export const SummaryContainer = styled('div', {
         },
       },
       false: {
+        cursor: 'pointer',
         $$color: '$colors$neutral200',
         [`.${darkTheme} &`]: {
           $$color: '$colors$neutral500',
         },
         backgroundColor: '$$color',
         '&:hover': {
-          backgroundColor: '$$color',
+          backgroundColor: '$neutral300',
+          [`.${darkTheme} &`]: {
+            backgroundColor: '$neutral400',
+          },
         },
       },
     },
@@ -111,7 +115,15 @@ export const SummaryContainer = styled('div', {
 export const summaryStyles = css({
   width: '100%',
   padding: '$15 $15 $10 $15',
-  cursor: 'default',
+});
+
+export const summaryHeaderStyles = css({
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  paddingBottom: '$10',
+  position: 'relative',
 });
 
 export const rowStyles = css({
@@ -288,6 +300,28 @@ export const MoreStep = styled('div', {
         borderColor: '$error500',
       },
       warning: { borderColor: '$warning500' },
+    },
+  },
+});
+
+export const Tag = styled('div', {
+  padding: '$5 $10',
+  borderRadius: '$md',
+  fontSize: '$12',
+  fontWeight: '$regular',
+  variants: {
+    recommended: {
+      true: {
+        backgroundColor: '$secondary',
+        color: '$background',
+        [`.${darkTheme} &`]: {
+          color: '$foreground',
+        },
+      },
+      false: {
+        border: '1px solid $secondary',
+        color: '$secondary',
+      },
     },
   },
 });

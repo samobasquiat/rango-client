@@ -1,6 +1,12 @@
 import type { QuoteError, QuoteWarning } from '../../types';
 import type { Step } from '@rango-dev/ui';
-import type { BestRouteResponse } from 'rango-sdk';
+import type {
+  BestRouteResponse,
+  MultiRouteSimulationResult,
+  RouteTag,
+  SimulationResult,
+  TagValue,
+} from 'rango-sdk';
 import type { ReactNode } from 'react';
 
 export type QuoteProps = {
@@ -9,10 +15,18 @@ export type QuoteProps = {
   warning: QuoteWarning | null;
   recommended: boolean;
   tag?: ReactNode;
-  quote: BestRouteResponse;
+  quote: MultiRouteSimulationResult | BestRouteResponse;
   input: { value: string; usdValue: string };
   output: { value: string; usdValue?: string };
   expanded?: boolean;
+  tags?: RouteTag[];
+  tagHidden?: boolean;
+  selectTag?: (value: { label: string; value: TagValue | string }) => void;
+};
+
+export type optionProps = {
+  value: string;
+  label: string;
 };
 
 export type QuoteTriggerProps = {
@@ -32,6 +46,6 @@ export type QuoteTriggerImagesProps = {
 };
 
 export type QuoteCostDetailsProps = {
-  quote: BestRouteResponse;
+  quote: MultiRouteSimulationResult | SimulationResult | null;
   steps: number;
 };

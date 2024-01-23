@@ -67,7 +67,10 @@ export function QuoteTrigger(props: QuoteTriggerProps) {
     <Trigger
       ref={(ref) => (quoteRef.current = ref)}
       recommended={recommended}
-      onClick={() => setExpanded((prevState) => !prevState)}>
+      onClick={(e) => {
+        e.stopPropagation();
+        setExpanded((prevState) => !prevState);
+      }}>
       <div className={rowStyles()}>
         <Typography variant="body" size="xsmall">
           {i18n.t('Via:')}

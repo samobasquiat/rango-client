@@ -20,13 +20,19 @@ import { RefreshButton } from './RefreshButton';
 import { UnreadNotificationsBadge } from './UnreadNotificationsBadge';
 
 export function HomeButtons(props: HomeButtonsPropTypes) {
-  const { onClickRefresh, onClickHistory, onClickSettings } = props;
+  const {
+    onClickRefresh,
+    onClickHistory,
+    onClickSettings,
+    notificationsHidden = false,
+  } = props;
 
   const {
     config: { features },
   } = useAppStore();
 
-  const isNotificationsHidden = isFeatureHidden('notification', features);
+  const isNotificationsHidden =
+    isFeatureHidden('notification', features) || notificationsHidden;
 
   return (
     <>
@@ -64,14 +70,16 @@ export function HomeButtons(props: HomeButtonsPropTypes) {
           <SettingsIcon size={18} color="black" />
         </HeaderButton>
       </Tooltip>
-      <Tooltip
-        container={getContainer()}
-        side="top"
-        content={i18n.t('Transactions History')}>
-        <HeaderButton size="small" variant="ghost" onClick={onClickHistory}>
-          <TransactionIcon size={18} color="black" />
-        </HeaderButton>
-      </Tooltip>
+      {onClickHistory && (
+        <Tooltip
+          container={getContainer()}
+          side="top"
+          content={i18n.t('Transactions History')}>
+          <HeaderButton size="small" variant="ghost" onClick={onClickHistory}>
+            <TransactionIcon size={18} color="black" />
+          </HeaderButton>
+        </Tooltip>
+      )}
     </>
   );
 }

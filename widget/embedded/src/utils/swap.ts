@@ -14,7 +14,9 @@ import type {
   BestRouteRequest,
   BestRouteResponse,
   BlockchainMeta,
+  MultiRouteSimulationResult,
   RecommendedSlippage,
+  SimulationResult,
   SwapFee,
   SwapResult,
   Token,
@@ -74,9 +76,9 @@ export function hasHighValueLoss(
   );
 }
 
-export function hasLimitError(quote: BestRouteResponse | null): boolean {
+export function hasLimitError(swaps: SwapResult[]): boolean {
   return (
-    (quote?.result?.swaps || []).filter((swap) => {
+    (swaps || []).filter((swap) => {
       const minimum = !!swap.fromAmountMinValue
         ? new BigNumber(swap.fromAmountMinValue)
         : null;
@@ -91,12 +93,13 @@ export function hasLimitError(quote: BestRouteResponse | null): boolean {
     }).length > 0
   );
 }
-export function getLimitErrorMessage(quote: BestRouteResponse): {
+
+export function getLimitErrorMessage(swaps: SwapResult[]): {
   swap: SwapResult;
   fromAmountRangeError: string;
   recommendation: string;
 } {
-  const swap = (quote.result?.swaps || []).filter((swap) => {
+  const swap = (swaps || []).filter((swap) => {
     const minimum = !!swap.fromAmountMinValue
       ? new BigNumber(swap.fromAmountMinValue)
       : null;
@@ -184,7 +187,7 @@ export function getSwapButtonState(params: {
   anyWalletConnected: boolean;
   fetchingQuote: boolean;
   inputAmount: string;
-  quote: BestRouteResponse | null;
+  quote: MultiRouteSimulationResult | BestRouteResponse | null;
   warning: QuoteWarning | null;
   error: QuoteError | null;
   needsToWarnEthOnPath: boolean;
@@ -213,14 +216,7 @@ export function getSwapButtonState(params: {
       disabled: false,
     };
   }
-  if (
-    fetchingQuote ||
-    !quote ||
-    !quote.result ||
-    error ||
-    !inputAmount ||
-    inputAmount === '0'
-  ) {
+  if (fetchingQuote || !quote || error || !inputAmount || inputAmount === '0') {
     return {
       title: swapButtonTitles().swap,
       action: 'confirm-swap',
@@ -247,24 +243,26 @@ export function getSwapButtonState(params: {
 }
 
 export function canComputePriceImpact(
-  quote: BestRouteResponse | null,
+  quote: MultiRouteSimulationResult | BestRouteResponse | null,
   inputAmount: string,
   usdValue: BigNumber | null
 ) {
   return !(
     (!usdValue || usdValue.lte(ZERO)) &&
-    !!quote?.result &&
+    !!quote &&
     !!inputAmount &&
     inputAmount !== '0' &&
     parseFloat(inputAmount || '0') !== 0 &&
-    !!quote.result
+    !!quote
   );
 }
 
-export function requiredWallets(quote: BestRouteResponse | null) {
+export function requiredWallets(
+  quote: MultiRouteSimulationResult | SimulationResult | null
+) {
   const wallets: string[] = [];
 
-  quote?.result?.swaps.forEach((swap) => {
+  quote?.swaps.forEach((swap) => {
     const currentStepFromBlockchain = swap.from.blockchain;
     const currentStepToBlockchain = swap.to.blockchain;
     let lastAddedWallet = wallets[wallets.length - 1];
@@ -377,10 +375,10 @@ export function hasSlippageError(
 }
 
 export function checkSlippageErrors(
-  quote: BestRouteResponse
+  swaps: SwapResult[]
 ): RecommendedSlippages | null {
   const recommendedSlippages: RecommendedSlippages = new Map();
-  quote.result?.swaps.forEach((swap, index) => {
+  swaps.forEach((swap, index) => {
     if (swap.recommendedSlippage?.error) {
       recommendedSlippages.set(index, swap.recommendedSlippage.slippage);
     }
@@ -392,11 +390,11 @@ export function checkSlippageErrors(
 }
 
 export function checkSlippageWarnings(
-  quote: BestRouteResponse,
+  quote: MultiRouteSimulationResult | SimulationResult,
   userSlippage: number
 ): RecommendedSlippages | null {
   const recommendedSlippages: RecommendedSlippages = new Map();
-  quote.result?.swaps.forEach((swap, index) => {
+  quote?.swaps.forEach((swap, index) => {
     if (
       swap.recommendedSlippage?.slippage &&
       parseFloat(swap.recommendedSlippage.slippage) > userSlippage
@@ -410,12 +408,8 @@ export function checkSlippageWarnings(
   return null;
 }
 
-export function getMinRequiredSlippage(
-  quote: BestRouteResponse
-): string | null {
-  const slippages = quote.result?.swaps.map(
-    (slippage) => slippage.recommendedSlippage
-  );
+export function getMinRequiredSlippage(swaps: SwapResult[]): string | null {
+  const slippages = swaps.map((slippage) => slippage.recommendedSlippage);
   return (
     slippages
       ?.map((s) => s?.slippage || '0')
@@ -436,7 +430,7 @@ export function hasProperSlippage(
 }
 
 export function hasEnoughBalance(
-  quote: BestRouteResponse,
+  quote: MultiRouteSimulationResult,
   selectedWallets: Wallet[]
 ) {
   const fee = quote.validationStatus;
@@ -463,7 +457,7 @@ export function hasEnoughBalance(
 }
 
 export function hasEnoughBalanceAndProperSlippage(
-  quote: BestRouteResponse,
+  quote: MultiRouteSimulationResult,
   selectedWallets: Wallet[],
   userSlippage: string,
   minRequiredSlippage: string | null
@@ -487,7 +481,7 @@ export function createQuoteRequestBody(params: {
   affiliateRef: string | null;
   affiliatePercent: number | null;
   affiliateWallets: { [key: string]: string } | null;
-  initialQuote?: BestRouteResponse;
+  initialQuote?: MultiRouteSimulationResult;
   destination?: string;
 }): BestRouteRequest {
   const {
@@ -536,22 +530,19 @@ export function createQuoteRequestBody(params: {
   const checkPrerequisites = !!initialQuote;
 
   const filteredBlockchains = removeDuplicateFrom(
-    (initialQuote?.result?.swaps || []).reduce(
-      (blockchains: string[], swap) => {
-        blockchains.push(swap.from.blockchain, swap.to.blockchain);
-        // Check if internalSwaps array exists
-        if (swap.internalSwaps && Array.isArray(swap.internalSwaps)) {
-          swap.internalSwaps.map((internalSwap) => {
-            blockchains.push(
-              internalSwap.from.blockchain,
-              internalSwap.to.blockchain
-            );
-          });
-        }
-        return blockchains;
-      },
-      []
-    )
+    (initialQuote?.swaps || []).reduce((blockchains: string[], swap) => {
+      blockchains.push(swap.from.blockchain, swap.to.blockchain);
+      // Check if internalSwaps array exists
+      if (swap.internalSwaps && Array.isArray(swap.internalSwaps)) {
+        swap.internalSwaps.map((internalSwap) => {
+          blockchains.push(
+            internalSwap.from.blockchain,
+            internalSwap.to.blockchain
+          );
+        });
+      }
+      return blockchains;
+    }, [])
   );
 
   const requestBody: BestRouteRequest = {
@@ -609,8 +600,10 @@ export function getWalletsForNewSwap(selectedWallets: Wallet[]) {
   return wallets;
 }
 
-export function getQuoteOutputAmount(quote: BestRouteResponse) {
-  return quote.result?.outputAmount || null;
+export function getQuoteOutputAmount(
+  quote: MultiRouteSimulationResult | SimulationResult
+) {
+  return quote?.outputAmount || null;
 }
 
 export function getPercentageChange(input: string, output: string) {
@@ -622,8 +615,8 @@ export function getPercentageChange(input: string, output: string) {
 }
 
 export function isOutputAmountChangedALot(
-  oldQuote: BestRouteResponse,
-  newQuote: BestRouteResponse
+  oldQuote: MultiRouteSimulationResult | SimulationResult,
+  newQuote: MultiRouteSimulationResult | SimulationResult
 ) {
   const oldOutputAmount = getQuoteOutputAmount(oldQuote);
   const newOutputAmount = getQuoteOutputAmount(newQuote);
@@ -639,12 +632,15 @@ export function isOutputAmountChangedALot(
 }
 
 export function generateBalanceWarnings(
-  quote: BestRouteResponse,
+  quote: MultiRouteSimulationResult | BestRouteResponse,
   selectedWallets: Wallet[],
   blockchains: BlockchainMeta[]
 ) {
   const fee = quote.validationStatus;
-  const requiredWallets = getRequiredChains(quote);
+  const innerQuote =
+    'result' in quote ? (quote.result as SimulationResult) : quote;
+
+  const requiredWallets = getRequiredChains(innerQuote);
   const walletsSortedByRequiredWallets = selectedWallets.sort(
     (selectedWallet1, selectedWallet2) =>
       requiredWallets.indexOf(selectedWallet1.chain) -
@@ -798,7 +794,7 @@ export function confirmSwapDisabled(
   fetching: boolean,
   showCustomDestination: boolean,
   customDestination: string,
-  quote: BestRouteResponse | null,
+  quote: MultiRouteSimulationResult | SimulationResult | null,
   selectedWallets: { walletType: string; chain: string }[],
   lastStepToBlockchain?: BlockchainMeta
 ) {

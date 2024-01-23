@@ -72,7 +72,7 @@ const descriptionStyles = css({
 export function ConfirmSwapPage() {
   //TODO: move component's logics to a custom hook
   const {
-    quote,
+    selectedQuote,
     setInputAmount,
     selectedWallets,
     quoteWalletsConfirmed,
@@ -102,7 +102,10 @@ export function ConfirmSwapPage() {
       error: null,
       warnings: null,
     });
-
+  const quote =
+    selectedQuote && 'result' in selectedQuote
+      ? selectedQuote.result
+      : selectedQuote;
   const [showQuoteWarningModal, setShowQuoteWarningModal] = useState(false);
 
   const onConfirmSwap: ConfirmSwap['fetch'] = async ({
@@ -215,9 +218,9 @@ export function ConfirmSwapPage() {
       let requiredWallets = getRequiredWallets(quote);
 
       const lastStepToBlockchain =
-        quote?.result?.swaps[quote.result.swaps.length - 1].to.blockchain;
+        quote?.swaps[quote.swaps.length - 1].to.blockchain;
 
-      const isLastWalletRequired = !!quote?.result?.swaps.find(
+      const isLastWalletRequired = !!quote?.swaps.find(
         (swap) => swap.from.blockchain === lastStepToBlockchain
       );
 
@@ -240,7 +243,7 @@ export function ConfirmSwapPage() {
       }
     }
 
-    if (quote && (selectedWalletDisconnected || quoteWalletsChanged)) {
+    if (selectedQuote && (selectedWalletDisconnected || quoteWalletsChanged)) {
       queueMicrotask(() => flushSync(setShowWallets.bind(null, true)));
       setQuoteWalletConfirmed(false);
     }
@@ -251,7 +254,7 @@ export function ConfirmSwapPage() {
   ]);
 
   useLayoutEffect(() => {
-    if (!quote) {
+    if (!selectedQuote) {
       navigate(`../${location.search}`);
     }
   }, []);
@@ -375,7 +378,7 @@ export function ConfirmSwapPage() {
         {alerts.length > 0 ? <Divider size={10} /> : null}
 
         <QuoteInfo
-          quote={quote}
+          quote={selectedQuote}
           type="swap-preview"
           expanded={true}
           error={confirmSwapResult.error}

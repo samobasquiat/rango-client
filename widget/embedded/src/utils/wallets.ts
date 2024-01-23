@@ -10,8 +10,9 @@ import type {
   WalletTypes,
 } from '@rango-dev/wallets-shared';
 import type {
-  BestRouteResponse,
   BlockchainMeta,
+  MultiRouteSimulationResult,
+  SimulationResult,
   Token,
   WalletDetail,
 } from 'rango-sdk';
@@ -192,10 +193,12 @@ export function prepareAccountsForWalletStore(
   return result;
 }
 
-export function getRequiredChains(quote: BestRouteResponse | null) {
+export function getRequiredChains(
+  quote: MultiRouteSimulationResult | SimulationResult | null
+) {
   const wallets: string[] = [];
 
-  quote?.result?.swaps.forEach((swap) => {
+  quote?.swaps.forEach((swap) => {
     const currentStepFromBlockchain = swap.from.blockchain;
     const currentStepToBlockchain = swap.to.blockchain;
     if (!wallets.includes(currentStepFromBlockchain)) {

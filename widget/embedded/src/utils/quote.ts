@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import type { QuoteError, QuoteWarning, Wallet } from '../types';
+import type { QuoteWarning, SortStrategy, Wallet } from '../types';
 import type { PriceImpactWarningLevel, Step } from '@rango-dev/ui';
 import type {
   SimulationAssetAndAmount,
@@ -9,6 +9,10 @@ import type {
   Asset,
   BestRouteResponse,
   BlockchainMeta,
+  MultiRouteResponse,
+  MultiRouteSimulationResult,
+  RouteTag,
+  SimulationResult,
   Token,
 } from 'rango-sdk';
 import type { PendingSwap } from 'rango-types';
@@ -16,65 +20,59 @@ import type { PendingSwap } from 'rango-types';
 import { getLastSuccessfulStep } from '@rango-dev/queue-manager-rango-preset';
 import BigNumber from 'bignumber.js';
 
+import { HIGH_PRIORITY_TAGS, ROUTE_SORTING_STRATEGY } from '../constants/quote';
 import { HIGHT_PRICE_IMPACT, LOW_PRICE_IMPACT } from '../constants/routing';
 import { HIGH_SLIPPAGE } from '../constants/swapSettings';
 import { getUsdValue } from '../store/quote';
-import { QuoteErrorType, QuoteWarningType } from '../types';
+import { QuoteWarningType } from '../types';
 
 import { areEqual } from './common';
 import { findBlockchain, findToken } from './meta';
 import {
-  checkSlippageErrors,
   checkSlippageWarnings,
-  getLimitErrorMessage,
   getMinRequiredSlippage,
   getPercentageChange,
   getTotalFeeInUsd,
   hasHighValueLoss,
-  hasLimitError,
   hasProperSlippage,
 } from './swap';
 
 export function getQuoteToTokenUsdPrice(
-  quote: BestRouteResponse | null
+  quote: MultiRouteSimulationResult | SimulationResult | null
 ): number | null | undefined {
-  return quote?.result?.swaps[quote?.result?.swaps.length - 1].to.usdPrice;
+  return quote?.swaps[quote?.swaps.length - 1].to.usdPrice;
 }
 
 export function isNumberOfSwapsChanged(
-  quoteA: BestRouteResponse,
-  quoteB: BestRouteResponse
+  quoteA: MultiRouteSimulationResult | SimulationResult,
+  quoteB: MultiRouteSimulationResult | SimulationResult
 ) {
-  const quoteASwaps = quoteA.result?.swaps || [];
-  const quoteBSwaps = quoteB.result?.swaps || [];
+  const quoteASwaps = quoteA?.swaps || [];
+  const quoteBSwaps = quoteB?.swaps || [];
   return quoteASwaps.length !== quoteBSwaps.length;
 }
 
 export function isQuoteSwappersUpdated(
-  quoteA: BestRouteResponse,
-  quoteB: BestRouteResponse
+  quoteA: MultiRouteSimulationResult | SimulationResult,
+  quoteB: MultiRouteSimulationResult | SimulationResult
 ) {
-  const quoteASwappers =
-    quoteA.result?.swaps.map((swap) => swap.swapperId) || [];
-  const quoteBSwappers =
-    quoteB.result?.swaps.map((swap) => swap.swapperId) || [];
+  const quoteASwappers = quoteA?.swaps.map((swap) => swap.swapperId) || [];
+  const quoteBSwappers = quoteB?.swaps.map((swap) => swap.swapperId) || [];
   return !areEqual(quoteASwappers, quoteBSwappers);
 }
 
 export function isQuoteInternalCoinsUpdated(
-  quoteA: BestRouteResponse,
-  quoteB: BestRouteResponse
+  quoteA: MultiRouteSimulationResult | SimulationResult,
+  quoteB: MultiRouteSimulationResult | SimulationResult
 ) {
-  const quoteAInternalCoins =
-    quoteA.result?.swaps.map((swap) => swap.to.symbol) || [];
-  const quoteBInternalCoins =
-    quoteB.result?.swaps.map((swap) => swap.to.symbol) || [];
+  const quoteAInternalCoins = quoteA?.swaps.map((swap) => swap.to.symbol) || [];
+  const quoteBInternalCoins = quoteB?.swaps.map((swap) => swap.to.symbol) || [];
   return !areEqual(quoteAInternalCoins, quoteBInternalCoins);
 }
 
 export function isQuoteChanged(
-  quoteA: BestRouteResponse,
-  quoteB: BestRouteResponse
+  quoteA: MultiRouteSimulationResult | SimulationResult,
+  quoteB: MultiRouteSimulationResult | SimulationResult
 ): boolean {
   return (
     isNumberOfSwapsChanged(quoteA, quoteB) ||
@@ -198,19 +196,23 @@ export function createRetryQuote(
 }
 
 export function generateQuoteWarnings(
-  quote: BestRouteResponse,
+  quote: MultiRouteSimulationResult | BestRouteResponse,
   params: {
     fromToken: Token;
     toToken: Token;
     tokens: Token[];
     userSlippage: number;
+    requestAmount: string;
   }
 ): QuoteWarning | null {
-  const { fromToken, toToken, tokens, userSlippage } = params;
-  const inputUsdValue = getUsdValue(fromToken, quote.requestAmount);
-  const outputUsdValue = getUsdValue(toToken, quote.result?.outputAmount ?? '');
+  const innerQuote =
+    'result' in quote ? (quote.result as SimulationResult) : quote;
 
-  if (quote.result && inputUsdValue && outputUsdValue) {
+  const { fromToken, toToken, tokens, userSlippage, requestAmount } = params;
+  const inputUsdValue = getUsdValue(fromToken, requestAmount);
+  const outputUsdValue = getUsdValue(toToken, innerQuote?.outputAmount ?? '');
+
+  if (!!quote && inputUsdValue && outputUsdValue) {
     const priceImpact = getPriceImpact(
       inputUsdValue.toString(),
       outputUsdValue.toString()
@@ -219,7 +221,7 @@ export function generateQuoteWarnings(
       !!priceImpact && hasHighValueLoss(inputUsdValue, priceImpact);
 
     if (highValueLoss) {
-      const totalFee = getTotalFeeInUsd(quote.result.swaps, tokens);
+      const totalFee = getTotalFeeInUsd(innerQuote?.swaps, tokens);
       const warningLevel = getPriceImpactLevel(priceImpact);
       return {
         type: QuoteWarningType.HIGH_VALUE_LOSS,
@@ -230,17 +232,17 @@ export function generateQuoteWarnings(
         warningLevel,
       };
     }
-  } else if (quote.result && (!inputUsdValue || !outputUsdValue)) {
+  } else if (quote && (!inputUsdValue || !outputUsdValue)) {
     return { type: QuoteWarningType.UNKNOWN_PRICE };
   }
 
-  const minRequiredSlippage = getMinRequiredSlippage(quote);
+  const minRequiredSlippage = getMinRequiredSlippage(innerQuote.swaps);
   const highSlippage = userSlippage > HIGH_SLIPPAGE;
 
   if (!hasProperSlippage(params.userSlippage.toString(), minRequiredSlippage)) {
     return {
       type: QuoteWarningType.INSUFFICIENT_SLIPPAGE,
-      recommendedSlippages: checkSlippageWarnings(quote, userSlippage),
+      recommendedSlippages: checkSlippageWarnings(innerQuote, userSlippage),
       minRequiredSlippage: minRequiredSlippage,
     };
   } else if (
@@ -250,41 +252,6 @@ export function generateQuoteWarnings(
     return {
       type: QuoteWarningType.HIGH_SLIPPAGE,
       slippage: userSlippage.toString(),
-    };
-  }
-
-  return null;
-}
-
-export function generateQuoteErrors(
-  quote: BestRouteResponse
-): QuoteError | null {
-  if (!quote.result) {
-    return {
-      type: QuoteErrorType.NO_RESULT,
-      diagnosisMessage: quote.diagnosisMessages?.[0],
-    };
-  }
-  const limitError = hasLimitError(quote);
-  if (limitError) {
-    const { swap, recommendation, fromAmountRangeError } =
-      getLimitErrorMessage(quote);
-    return {
-      type: QuoteErrorType.BRIDGE_LIMIT,
-      swap: swap,
-      recommendation,
-      fromAmountRangeError,
-    };
-  }
-
-  const recommendedSlippages = checkSlippageErrors(quote);
-
-  if (recommendedSlippages) {
-    const minRequiredSlippage = getMinRequiredSlippage(quote);
-    return {
-      type: QuoteErrorType.INSUFFICIENT_SLIPPAGE,
-      recommendedSlippages,
-      minRequiredSlippage,
     };
   }
 
@@ -325,4 +292,61 @@ export const getUniqueBlockchains = (steps: Step[]) => {
   });
 
   return result;
+};
+
+export const sortRoutesBy = (
+  strategy: SortStrategy,
+  routes: MultiRouteResponse['results']
+): MultiRouteResponse['results'] => {
+  return routes.sort((route1, route2) => {
+    const sortPreferenceType = ROUTE_SORTING_STRATEGY[strategy];
+
+    const route1Score =
+      route1.scores?.find(
+        (score) => score.preferenceType === sortPreferenceType
+      )?.score ?? 0;
+    const route2Score =
+      route2.scores?.find(
+        (score) => score.preferenceType === sortPreferenceType
+      )?.score ?? 0;
+
+    if (sortPreferenceType === 'NET_OUTPUT' || sortPreferenceType === 'PRICE') {
+      return route2Score - route1Score;
+    }
+    return route1Score - route2Score;
+  });
+};
+// Function to get a unique key for each object
+const getKey = (obj: RouteTag) => obj.value;
+export function getUniqueTags(tags: RouteTag[]) {
+  // Create a Map to store unique objects based on their key
+  const uniqueObjectsMap = new Map();
+
+  tags.forEach((obj) => {
+    const key = getKey(obj);
+    uniqueObjectsMap.set(key, obj);
+  });
+  // Convert the Map values back to an array
+  return Array.from(uniqueObjectsMap.values());
+}
+
+export const sortTags = (tags: RouteTag[]): RouteTag[] => {
+  const customSort = (a: RouteTag, b: RouteTag) => {
+    const indexA = HIGH_PRIORITY_TAGS.indexOf(a.value);
+    const indexB = HIGH_PRIORITY_TAGS.indexOf(b.value);
+
+    if (indexA !== -1 && indexB !== -1) {
+      return indexA - indexB;
+    }
+
+    if (indexA !== -1) {
+      return -1;
+    } else if (indexB !== -1) {
+      return 1;
+    }
+
+    return 0;
+  };
+
+  return tags.sort(customSort);
 };

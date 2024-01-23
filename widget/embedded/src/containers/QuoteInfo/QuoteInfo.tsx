@@ -10,7 +10,19 @@ import { QuoteErrorType } from '../../types';
 import { QuoteContainer } from './QuoteInfo.styles';
 
 export function QuoteInfo(props: PropTypes) {
-  const { quote, type, loading, error, warning, expanded = false } = props;
+  const {
+    quote,
+    type,
+    loading,
+    error,
+    warning,
+    expanded = false,
+    recommended = true,
+    selectTag,
+    tagHidden,
+    onClick,
+    tags,
+  } = props;
   const { inputAmount, inputUsdValue, outputUsdValue, outputAmount } =
     useQuoteStore();
 
@@ -19,25 +31,28 @@ export function QuoteInfo(props: PropTypes) {
     (error.type === QuoteErrorType.NO_RESULT ||
       error.type === QuoteErrorType.REQUEST_FAILED);
 
-  const showQuote = !noResult && quote && quote.result && !loading;
+  const showQuote = !noResult && quote && !loading;
 
   if (loading) {
     return (
       <QuoteContainer>
-        <QuoteSkeleton type={type} expanded={expanded} />
+        <QuoteSkeleton tag={!tagHidden} type={type} expanded={expanded} />
       </QuoteContainer>
     );
   }
 
   return showQuote ? (
-    <QuoteContainer>
+    <QuoteContainer onClick={() => onClick && onClick(quote)}>
       <Quote
         quote={quote}
         error={error}
         warning={warning}
+        tags={tags}
+        tagHidden={tagHidden}
         type={type}
         expanded={expanded}
-        recommended={true}
+        recommended={recommended}
+        selectTag={selectTag}
         input={{
           value: inputAmount,
           usdValue: inputUsdValue?.toString() ?? '',

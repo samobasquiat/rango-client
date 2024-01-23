@@ -1,3 +1,5 @@
+import type { TagValue } from 'rango-sdk';
+
 import { i18n } from '@lingui/core';
 import { Button, Divider, styled, SwapInput, WarningIcon } from '@rango-dev/ui';
 import React, { useEffect, useState } from 'react';
@@ -25,7 +27,12 @@ import { useUiStore } from '../store/ui';
 import { useWalletsStore } from '../store/wallets';
 import { getContainer } from '../utils/common';
 import { formatTooltipNumbers, numberToString } from '../utils/numbers';
-import { getPriceImpact, getPriceImpactLevel } from '../utils/quote';
+import {
+  getPriceImpact,
+  getPriceImpactLevel,
+  getUniqueTags,
+  sortTags,
+} from '../utils/quote';
 import { canComputePriceImpact, getSwapButtonState } from '../utils/swap';
 import { formatBalance, isFetchingBalance } from '../utils/wallets';
 
@@ -42,12 +49,6 @@ const InputsContainer = styled('div', {
 export function Home() {
   const navigate = useNavigate();
   const {
-    fetch: fetchQuote,
-    loading,
-    error: quoteError,
-    warning: quoteWarning,
-  } = useSwapInput();
-  const {
     fromToken,
     fromBlockchain,
     toToken,
@@ -57,10 +58,27 @@ export function Home() {
     inputUsdValue,
     outputAmount,
     outputUsdValue,
-    quote,
+    selectedQuote,
+    refetchQuote,
+    quotes,
     resetQuoteWallets,
     setQuoteWarningsConfirmed,
+    setSelectedQuote,
+    setSelectedTag,
+    setRefetchQuote,
   } = useQuoteStore();
+  const {
+    fetch: fetchQuote,
+    loading,
+    error: quoteError,
+    warning: quoteWarning,
+  } = useSwapInput({ refetchQuote });
+
+  // Extract tags from each object and flatten them into a single array
+  const allTags = quotes?.results.flatMap((item) => item.tags);
+  const uniqueTagsArray = sortTags(getUniqueTags(allTags || [])).filter(
+    (tag) => tag.value !== 'HIGH_IMPACT' && tag.value !== 'CENTRALIZED'
+  );
 
   const fetchMetaStatus = useAppStore().fetchStatus;
 
@@ -74,13 +92,13 @@ export function Home() {
   const needsToWarnEthOnPath = false;
 
   const priceImpactInputCanNotBeComputed = !canComputePriceImpact(
-    quote,
+    selectedQuote,
     inputAmount,
     inputUsdValue
   );
 
   const priceImpactOutputCanNotBeComputed = !canComputePriceImpact(
-    quote,
+    selectedQuote,
     inputAmount,
     outputUsdValue
   );
@@ -89,7 +107,7 @@ export function Home() {
     fetchMetaStatus,
     fetchingQuote: loading,
     inputAmount,
-    quote,
+    quote: selectedQuote,
     anyWalletConnected: connectedWallets.length > 0,
     error: quoteError,
     warning: quoteWarning,
@@ -115,12 +133,30 @@ export function Home() {
 
   useEffect(() => {
     resetQuoteWallets();
+    setRefetchQuote(true);
   }, []);
 
   const percentageChange =
     !inputUsdValue || !outputUsdValue || !outputUsdValue.gt(0)
       ? null
       : getPriceImpact(inputUsdValue.toString(), outputUsdValue.toString());
+
+  const selectQuoteByTag = (tag: {
+    label: string;
+    value: TagValue | string;
+  }) => {
+    const { value } = tag;
+    if (value === 'SHOW_MORE') {
+      setRefetchQuote(false);
+      navigate(navigationRoutes.routes);
+    } else {
+      const quote = quotes?.results?.find((quote) =>
+        quote.tags.some((tag) => value === tag.value)
+      );
+      setSelectedQuote(quote || null);
+      setSelectedTag(tag);
+    }
+  };
 
   return (
     <Layout
@@ -156,7 +192,7 @@ export function Home() {
         suffix: (
           <HomeButtons
             onClickRefresh={
-              (!!quote || quoteError) && !showQuoteWarningModal
+              (!!selectedQuote || quoteError) && !showQuoteWarningModal
                 ? fetchQuote
                 : undefined
             }
@@ -211,7 +247,7 @@ export function Home() {
             <SwitchFromAndToButton />
           </FromContainer>
           <SwapInput
-            sharpBottomStyle={!!quote?.result || fetchingQuote}
+            sharpBottomStyle={!!selectedQuote || fetchingQuote}
             label={i18n.t('To')}
             mode="To"
             fetchingQuote={fetchingQuote}
@@ -258,11 +294,20 @@ export function Home() {
         </InputsContainer>
         <Divider size="2" />
         <QuoteInfo
-          quote={quote}
+          quote={selectedQuote}
           loading={fetchingQuote}
           error={quoteError}
+          tagHidden={false}
           warning={quoteWarning}
           type="basic"
+          tags={[
+            ...uniqueTagsArray,
+            {
+              label: i18n.t(`View all ${quotes?.results.length} routes`),
+              value: 'SHOW_MORE',
+            },
+          ]}
+          selectTag={selectQuoteByTag}
         />
         {quoteWarning || quoteError ? (
           <>

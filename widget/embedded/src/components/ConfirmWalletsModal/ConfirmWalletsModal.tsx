@@ -54,7 +54,7 @@ export function ConfirmWalletsModal(props: PropTypes) {
   const config = useAppStore().config;
   const blockchains = useAppStore().blockchains();
   const {
-    quote,
+    selectedQuote,
     setSelectedWallets: selectQuoteWallets,
     quoteWalletsConfirmed: quoteWalletsConfirmed,
     setQuoteWalletConfirmed: setQuoteWalletConfirmed,
@@ -73,16 +73,19 @@ export function ConfirmWalletsModal(props: PropTypes) {
   const [showCustomDestination, setShowCustomDestination] = useState(
     !!customDestination
   );
+  const quote =
+    selectedQuote && 'result' in selectedQuote
+      ? selectedQuote.result
+      : selectedQuote;
 
   const requiredWallets = getRequiredWallets(quote);
 
   const lastStepToBlockchain = blockchains.find(
     (blockchain) =>
-      blockchain.name ===
-      quote?.result?.swaps[quote?.result?.swaps.length - 1].to.blockchain
+      blockchain.name === quote?.swaps[quote?.swaps.length - 1].to.blockchain
   );
   const isWalletRequiredFor = (blockchain: string) =>
-    !!quote?.result?.swaps.find((swap) => swap.from.blockchain === blockchain);
+    !!quote?.swaps.find((swap) => swap.from.blockchain === blockchain);
 
   const [selectableWallets, setSelectableWallets] = useState<ConnectedWallet[]>(
     connectedWallets.filter((connectedWallet) => {

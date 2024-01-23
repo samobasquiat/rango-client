@@ -8,7 +8,7 @@ import { useQuoteStore } from '../store/quote';
 import { QuoteErrorType } from '../types';
 import { debounce } from '../utils/common';
 import { isPositiveNumber } from '../utils/numbers';
-import { generateQuoteWarnings } from '../utils/quote';
+import { generateQuoteWarnings, sortRoutesBy, sortTags } from '../utils/quote';
 import { isFeatureEnabled } from '../utils/settings';
 import { createQuoteRequestBody } from '../utils/swap';
 import { tokensAreEqual } from '../utils/wallets';
@@ -28,29 +28,37 @@ type FetchQuoteParams = Omit<
 > & { fromToken: Token | null; toToken: Token | null };
 
 type UseSwapInput = {
-  fetch: () => void;
+  fetch: (shouldChangeSelectedQuote?: boolean) => void;
   loading: boolean;
   error: QuoteError | null;
   warning: QuoteWarning | null;
 };
-
+type UseSwapInputProps = {
+  refetchQuote: boolean;
+};
 /**
  * a hook for fetching quote based on from and to input values
  * we use this hook in home page
  */
-export function useSwapInput(): UseSwapInput {
+export function useSwapInput({
+  refetchQuote,
+}: UseSwapInputProps): UseSwapInput {
   const { fetch: fetchQuote, cancelFetch } = useFetchQuote();
   const { liquiditySources, enableNewLiquiditySources, features } =
     useAppStore().config;
+
   const tokens = useAppStore().tokens();
   const {
     fromToken,
     toToken,
     inputAmount,
     inputUsdValue,
-    quote,
+    selectedQuote,
+    sortStrategy,
     resetQuote,
-    setQuote,
+    setSelectedQuote,
+    setQuotes,
+    setSelectedTag,
   } = useQuoteStore();
   const {
     slippage,
@@ -113,15 +121,29 @@ export function useSwapInput(): UseSwapInput {
       fetchQuote(requestBody)
         .then((res) => {
           setLoading(false);
-          setQuote(res);
-          throwErrorIfResponseIsNotValid(res);
-          const quoteWarning = generateQuoteWarnings(res, {
-            fromToken,
-            toToken,
-            userSlippage,
-            tokens,
-          });
+          setQuotes(res);
+          const sortQuotes = sortRoutesBy(sortStrategy, res.results);
+          const quote = sortQuotes.length ? sortQuotes[0] : null;
+          const sortedQuoteTags = sortTags(quote?.tags || []);
+          setSelectedQuote(quote);
+          setSelectedTag(sortedQuoteTags[0]);
+          const { requestAmount } = res;
+
+          const quoteWarning =
+            quote &&
+            generateQuoteWarnings(quote, {
+              fromToken,
+              toToken,
+              userSlippage,
+              tokens,
+              requestAmount,
+            });
           setWarning(quoteWarning);
+          throwErrorIfResponseIsNotValid({
+            diagnosisMessages: res.diagnosisMessages,
+            requestId: quote?.requestId || '',
+            swaps: quote?.swaps,
+          });
         })
         .catch((error) => {
           const { error: quoteError } = handleQuoteErrors(error);
@@ -149,7 +171,7 @@ export function useSwapInput(): UseSwapInput {
   );
 
   useEffect(() => {
-    if (fetchStatus !== 'success') {
+    if (fetchStatus !== 'success' || !refetchQuote) {
       return;
     }
     if (!isPositiveNumber(inputAmount) || inputUsdValue?.eq(0)) {
@@ -158,7 +180,7 @@ export function useSwapInput(): UseSwapInput {
       return;
     }
     if (shouldSkipRequest) {
-      if (quote) {
+      if (selectedQuote) {
         resetQuote();
       }
       return;

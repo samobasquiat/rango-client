@@ -1,12 +1,13 @@
-import type { QuoteProps } from './Quote.types';
+import type { optionProps, QuoteProps } from './Quote.types';
 import type { Step } from '@rango-dev/ui';
-import type { SwapResult } from 'rango-sdk';
+import type { RouteTag, SwapResult } from 'rango-sdk';
 
 import { i18n } from '@lingui/core';
 import {
   Alert,
   Divider,
   InfoIcon,
+  Select,
   StepDetails,
   TokenAmount,
   Tooltip,
@@ -28,6 +29,7 @@ import {
   FooterStepAlarm,
 } from '../../containers/QuoteInfo/QuoteInfo.styles';
 import { useAppStore } from '../../store/AppStore';
+import { useQuoteStore } from '../../store/quote';
 import { QuoteErrorType, QuoteWarningType } from '../../types';
 import { getContainer } from '../../utils/common';
 import {
@@ -35,7 +37,11 @@ import {
   getSwapperDisplayName,
 } from '../../utils/meta';
 import { formatTooltipNumbers, numberToString } from '../../utils/numbers';
-import { getPriceImpact, getPriceImpactLevel } from '../../utils/quote';
+import {
+  getPriceImpact,
+  getPriceImpactLevel,
+  sortTags,
+} from '../../utils/quote';
 
 import {
   BasicInfoOutput,
@@ -48,7 +54,9 @@ import {
   QuoteContainer,
   stepsDetailsStyles,
   SummaryContainer,
+  summaryHeaderStyles,
   summaryStyles,
+  Tag,
 } from './Quote.styles';
 import { QuoteCostDetails } from './QuoteCostDetails';
 import { QuoteSummary } from './QuoteSummary';
@@ -56,20 +64,24 @@ import { QuoteTrigger } from './QuoteTrigger ';
 
 export function Quote(props: QuoteProps) {
   const {
-    quote,
     input,
     output,
     error,
     warning,
     type,
     recommended = true,
+    tags,
+    tagHidden = true,
+    selectTag,
   } = props;
   const blockchains = useAppStore().blockchains();
   const swappers = useAppStore().swappers();
-
+  const { selectedTag, selectedQuote } = useQuoteStore();
   const [expanded, setExpanded] = useState(props.expanded);
   const quoteRef = useRef<HTMLButtonElement | null>(null);
   const prevExpanded = useRef(expanded);
+  const quote =
+    props.quote && 'result' in props.quote ? props.quote.result : props.quote;
   const roundedInput = numberToString(
     input.value,
     TOKEN_AMOUNT_MIN_DECIMALS,
@@ -260,9 +272,15 @@ export function Quote(props: QuoteProps) {
       };
     });
   };
-  const steps = getQuoteSteps(quote.result?.swaps ?? []);
+  const steps = getQuoteSteps(quote?.swaps ?? []);
+
   const numberOfSteps = steps.length;
-  const tooltipContainer = getContainer();
+  const container = getContainer();
+  const sortedQuoteTags =
+    !!quote && 'tags' in quote ? sortTags(quote.tags as RouteTag[]) : [];
+  const isQuoteSelected = selectedQuote?.requestId === props.quote.requestId;
+
+  const quoteTag = isQuoteSelected ? selectedTag : sortedQuoteTags[0];
   useLayoutEffect(() => {
     if (expanded && !prevExpanded.current && quoteRef.current) {
       setTimeout(() => {
@@ -279,7 +297,27 @@ export function Quote(props: QuoteProps) {
         listItem={type === 'list-item'}
         basic={type === 'basic'}>
         <div className={summaryStyles()}>
-          <QuoteCostDetails steps={numberOfSteps} quote={quote} />
+          <div id="portal-root" className={summaryHeaderStyles()}>
+            <QuoteCostDetails steps={numberOfSteps} quote={quote} />
+            {!tagHidden &&
+              (tags && tags.length > 2 ? (
+                <Select
+                  container={container}
+                  value={
+                    (selectedTag ?? {
+                      label: i18n.t('Selected'),
+                      value: 'selected',
+                    }) as optionProps
+                  }
+                  options={tags as optionProps[]}
+                  handleItemClick={selectTag}
+                />
+              ) : (
+                quoteTag && (
+                  <Tag recommended={recommended}>{quoteTag.label}</Tag>
+                )
+              ))}
+          </div>
           {type === 'basic' && (
             <div className={basicInfoStyles()}>
               <FrameIcon>
@@ -291,7 +329,7 @@ export function Quote(props: QuoteProps) {
                 </BasicInfoOutput>
                 <Tooltip
                   content={formatTooltipNumbers(output.value)}
-                  container={tooltipContainer}
+                  container={container}
                   open={!output.value ? false : undefined}>
                   <BasicInfoOutput size="small" variant="body">
                     &nbsp;
@@ -303,7 +341,7 @@ export function Quote(props: QuoteProps) {
               </ContainerInfoOutput>
               <Tooltip
                 content={formatTooltipNumbers(output.usdValue)}
-                container={tooltipContainer}
+                container={container}
                 style={{
                   display: 'flex',
                 }}>
@@ -321,7 +359,6 @@ export function Quote(props: QuoteProps) {
             <TokenAmount
               type="output"
               direction="vertical"
-              tooltipContainer={tooltipContainer}
               price={{
                 value: roundedOutput,
                 usdValue: roundedOutputUsdValue,
@@ -372,7 +409,6 @@ export function Quote(props: QuoteProps) {
                     step={step}
                     hasSeparator={index !== steps.length - 1}
                     state={step.state}
-                    tooltipContainer={tooltipContainer}
                   />
                 );
               })}

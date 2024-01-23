@@ -1,6 +1,12 @@
 import type { ConfirmSwapFetchResult } from './useConfirmSwap.types';
-import type { ConfirmSwapWarnings, Wallet } from '../../types';
-import type { BestRouteResponse, BlockchainMeta, Token } from 'rango-sdk';
+import type { ConfirmSwapWarnings, QuoteResponse, Wallet } from '../../types';
+import type {
+  BestRouteResponse,
+  BlockchainMeta,
+  MultiRouteSimulationResult,
+  SimulationResult,
+  Token,
+} from 'rango-sdk';
 
 import { errorMessages } from '../../constants/errors';
 import { QuoteErrorType, QuoteUpdateType } from '../../types';
@@ -26,8 +32,8 @@ import {
 /**
  * A request can be successful but in body of the response, it can be some case which is considered as failed.
  */
-export function throwErrorIfResponseIsNotValid(response: BestRouteResponse) {
-  if (!response.result) {
+export function throwErrorIfResponseIsNotValid(response: QuoteResponse) {
+  if (!response.swaps) {
     throw new Error(errorMessages().noResultError.title, {
       cause: {
         type: QuoteErrorType.NO_RESULT,
@@ -35,10 +41,12 @@ export function throwErrorIfResponseIsNotValid(response: BestRouteResponse) {
       },
     });
   }
-  const limitError = hasLimitError(response);
+
+  const limitError = hasLimitError(response.swaps);
   if (limitError) {
-    const { swap, recommendation, fromAmountRangeError } =
-      getLimitErrorMessage(response);
+    const { swap, recommendation, fromAmountRangeError } = getLimitErrorMessage(
+      response.swaps
+    );
 
     throw new Error('bridge limit error', {
       cause: {
@@ -50,10 +58,10 @@ export function throwErrorIfResponseIsNotValid(response: BestRouteResponse) {
     });
   }
 
-  const recommendedSlippages = checkSlippageErrors(response);
+  const recommendedSlippages = checkSlippageErrors(response.swaps);
 
   if (recommendedSlippages) {
-    const minRequiredSlippage = getMinRequiredSlippage(response);
+    const minRequiredSlippage = getMinRequiredSlippage(response.swaps);
     throw new Error('', {
       cause: {
         type: QuoteErrorType.INSUFFICIENT_SLIPPAGE,
@@ -62,13 +70,11 @@ export function throwErrorIfResponseIsNotValid(response: BestRouteResponse) {
       },
     });
   }
-
-  return response;
 }
 
 export function generateWarnings(
-  previousQuote: BestRouteResponse | undefined,
-  currentQuote: BestRouteResponse,
+  previousQuote: MultiRouteSimulationResult | BestRouteResponse,
+  currentQuote: MultiRouteSimulationResult | BestRouteResponse,
   params: {
     fromToken: Token;
     toToken: Token;
@@ -77,9 +83,17 @@ export function generateWarnings(
     userSlippage: number;
   }
 ): ConfirmSwapWarnings {
+  const innerPreviousQuote =
+    'result' in previousQuote
+      ? (previousQuote.result as SimulationResult)
+      : previousQuote;
+  const innerCurrentQuote =
+    'result' in currentQuote
+      ? (currentQuote.result as SimulationResult)
+      : currentQuote;
   let quoteChanged = false;
   if (previousQuote) {
-    quoteChanged = isQuoteChanged(previousQuote, currentQuote);
+    quoteChanged = isQuoteChanged(innerPreviousQuote, innerCurrentQuote);
   }
   const output: ConfirmSwapWarnings = {
     quote: null,
@@ -92,6 +106,7 @@ export function generateWarnings(
     toToken: params.toToken,
     tokens: params.meta.tokens,
     userSlippage: params.userSlippage,
+    requestAmount: '',
   });
 
   if (quoteWarning) {
@@ -99,28 +114,32 @@ export function generateWarnings(
   }
 
   if (previousQuote && quoteChanged) {
-    if (isOutputAmountChangedALot(previousQuote, currentQuote)) {
+    if (isOutputAmountChangedALot(innerPreviousQuote, innerCurrentQuote)) {
       output.quoteUpdate = {
         type: QuoteUpdateType.QUOTE_AND_OUTPUT_AMOUNT_UPDATED,
-        newOutputAmount: numberToString(getQuoteOutputAmount(currentQuote)),
+        newOutputAmount: numberToString(
+          getQuoteOutputAmount(innerCurrentQuote)
+        ),
         percentageChange: numberToString(
           getPriceImpact(
-            getQuoteOutputAmount(previousQuote) ?? '',
-            getQuoteOutputAmount(currentQuote) ?? ''
+            getQuoteOutputAmount(innerPreviousQuote) ?? '',
+            getQuoteOutputAmount(innerCurrentQuote) ?? ''
           ),
           null,
           2
         ),
       };
-    } else if (isNumberOfSwapsChanged(previousQuote, currentQuote)) {
+    } else if (isNumberOfSwapsChanged(innerPreviousQuote, innerCurrentQuote)) {
       output.quoteUpdate = {
         type: QuoteUpdateType.QUOTE_UPDATED,
       };
-    } else if (isQuoteSwappersUpdated(previousQuote, currentQuote)) {
+    } else if (isQuoteSwappersUpdated(innerPreviousQuote, innerCurrentQuote)) {
       output.quoteUpdate = {
         type: QuoteUpdateType.QUOTE_SWAPPERS_UPDATED,
       };
-    } else if (isQuoteInternalCoinsUpdated(previousQuote, currentQuote)) {
+    } else if (
+      isQuoteInternalCoinsUpdated(innerPreviousQuote, innerCurrentQuote)
+    ) {
       output.quoteUpdate = {
         type: QuoteUpdateType.QUOTE_COINS_UPDATED,
       };

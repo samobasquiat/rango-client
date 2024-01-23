@@ -1,27 +1,27 @@
-import type { BestRouteRequest, MultiRouteResponse } from 'rango-sdk';
+import type { ConfirmRouteRequest, ConfirmRouteResponse } from 'rango-sdk';
 
 import { useRef, useState } from 'react';
 
 import { httpService } from '../services/httpService';
 
-interface UseFetchQuote {
-  fetch: (requestBody: BestRouteRequest) => Promise<MultiRouteResponse>;
+interface UseFetchConfirmQuote {
+  fetch: (requestBody: ConfirmRouteRequest) => Promise<ConfirmRouteResponse>;
   cancelFetch: () => void;
   loading: boolean;
 }
 
-export function useFetchQuote(): UseFetchQuote {
+export function useFetchConfirmQuote(): UseFetchConfirmQuote {
   const [loading, setLoading] = useState(false);
   const abortController = useRef<AbortController | null>(null);
   const cancel = () => abortController.current?.abort();
 
-  const fetch: UseFetchQuote['fetch'] = async (requestBody) => {
+  const fetch: UseFetchConfirmQuote['fetch'] = async (requestBody) => {
     cancel();
     abortController.current = new AbortController();
 
     setLoading(true);
     try {
-      const res = await httpService().getAllRoutes(requestBody, {
+      const res = await httpService().confirmRouteRequest(requestBody, {
         signal: abortController.current.signal,
       });
       abortController.current = null;

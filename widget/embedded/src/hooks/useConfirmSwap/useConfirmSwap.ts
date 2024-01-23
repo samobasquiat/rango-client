@@ -1,16 +1,14 @@
 import type { ConfirmSwap, Params } from './useConfirmSwap.types';
 import type { PendingSwapSettings } from '../../types';
-import type { BestRouteResponse } from 'rango-sdk';
+import type { ConfirmRouteRequest } from 'rango-sdk';
 
 import { calculatePendingSwap } from '@rango-dev/queue-manager-rango-preset';
 import { useEffect } from 'react';
 
 import { useAppStore } from '../../store/AppStore';
 import { useQuoteStore } from '../../store/quote';
-import { useWalletsStore } from '../../store/wallets';
-import { isFeatureEnabled } from '../../utils/settings';
-import { createQuoteRequestBody, getWalletsForNewSwap } from '../../utils/swap';
-import { useFetchQuote } from '../useFetchQuote';
+import { getWalletsForNewSwap } from '../../utils/swap';
+import { useFetchConfirmQuote } from '../useFetchConfirmQuote';
 
 import {
   generateWarnings,
@@ -23,29 +21,19 @@ export function useConfirmSwap(): ConfirmSwap {
     fromToken,
     toToken,
     inputAmount,
-    setQuote,
-    quote: initialQuote,
+    setSelectedQuote,
+    selectedQuote: initialQuote,
     customDestination: customDestinationFromStore,
     setQuoteWarningsConfirmed,
   } = useQuoteStore();
 
-  const {
-    slippage,
-    customSlippage,
-    affiliatePercent,
-    affiliateRef,
-    affiliateWallets,
-    disabledLiquiditySources,
-  } = useAppStore();
-  const { connectedWallets } = useWalletsStore();
+  const { slippage, customSlippage, disabledLiquiditySources } = useAppStore();
   const blockchains = useAppStore().blockchains();
   const tokens = useAppStore().tokens();
-  const { features } = useAppStore().config;
-  const { enableNewLiquiditySources } = useAppStore().config;
 
   const userSlippage = customSlippage || slippage;
 
-  const { fetch: fetchQuote, cancelFetch, loading } = useFetchQuote();
+  const { fetch: fetchQuote, cancelFetch, loading } = useFetchConfirmQuote();
 
   useEffect(() => cancelFetch, []);
 
@@ -63,70 +51,64 @@ export function useConfirmSwap(): ConfirmSwap {
       };
     }
 
-    const requestBody = createQuoteRequestBody({
-      fromToken,
-      toToken,
-      inputAmount,
-      wallets: connectedWallets,
-      selectedWallets,
-      excludeLiquiditySources: enableNewLiquiditySources,
-      disabledLiquiditySources,
-      slippage: userSlippage,
-      affiliateRef,
-      affiliatePercent,
-      affiliateWallets,
-      initialQuote: initialQuote ?? undefined,
+    const wallets = selectedWallets.reduce((acc, item) => {
+      acc[item.chain] = item.address;
+      return acc;
+    }, {} as Record<string, string>);
+    const requestBody: ConfirmRouteRequest = {
+      requestId: initialQuote?.requestId || '',
+      selectedWallets: wallets,
       destination: customDestination,
-    });
-    if (isFeatureEnabled('experimentalRoute', features)) {
-      requestBody.experimental = true;
-    }
-    let currentQuote: BestRouteResponse;
+    };
+
     try {
-      currentQuote = await fetchQuote(requestBody).then((response) =>
-        throwErrorIfResponseIsNotValid(response)
-      );
-      setQuote(currentQuote);
+      return await fetchQuote(requestBody).then((response) => {
+        const { result: currentQuote } = response;
+        throwErrorIfResponseIsNotValid({
+          diagnosisMessages: currentQuote.diagnosisMessages,
+          requestId: currentQuote.requestId,
+          swaps: currentQuote.result?.swaps,
+        });
+
+        const swapSettings: PendingSwapSettings = {
+          slippage: userSlippage.toString(),
+          disabledSwappersGroups: disabledLiquiditySources,
+        };
+        const swap = calculatePendingSwap(
+          inputAmount.toString(),
+          currentQuote,
+          getWalletsForNewSwap(selectedWallets),
+          swapSettings,
+          false,
+          { blockchains, tokens }
+        );
+
+        const confirmSwapWarnings = !!initialQuote
+          ? generateWarnings(initialQuote, currentQuote, {
+              fromToken,
+              toToken,
+              meta: { blockchains, tokens },
+              selectedWallets,
+              userSlippage,
+            })
+          : null;
+
+        if (confirmSwapWarnings?.quoteUpdate) {
+          setQuoteWarningsConfirmed(false);
+        }
+
+        setSelectedQuote(currentQuote);
+        return {
+          quote: currentQuote,
+          swap,
+          error: null,
+          warnings: confirmSwapWarnings,
+        };
+      });
     } catch (error: any) {
       const confirmSwapResult = handleQuoteErrors(error);
       return confirmSwapResult;
     }
-
-    const swapSettings: PendingSwapSettings = {
-      slippage: userSlippage.toString(),
-      disabledSwappersGroups: disabledLiquiditySources,
-    };
-    const swap = calculatePendingSwap(
-      inputAmount.toString(),
-      currentQuote,
-      getWalletsForNewSwap(selectedWallets),
-      swapSettings,
-      false,
-      { blockchains, tokens }
-    );
-
-    const confirmSwapWarnings = generateWarnings(
-      initialQuote ?? undefined,
-      currentQuote,
-      {
-        fromToken,
-        toToken,
-        meta: { blockchains, tokens },
-        selectedWallets,
-        userSlippage,
-      }
-    );
-
-    if (confirmSwapWarnings.quoteUpdate) {
-      setQuoteWarningsConfirmed(false);
-    }
-
-    return {
-      quote: currentQuote,
-      swap,
-      error: null,
-      warnings: confirmSwapWarnings,
-    };
   };
 
   return {

@@ -14,3 +14,13 @@ export const FooterAlert = styled('div', {
   width: '100%',
   display: 'flex',
 });
+
+export const SkeletonContainer = styled('div', {
+  variants: {
+    paddingTop: {
+      true: {
+        paddingTop: '$10',
+      },
+    },
+  },
+});

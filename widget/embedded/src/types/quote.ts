@@ -105,3 +105,18 @@ export type ConfirmSwapWarnings = {
   quoteUpdate: QuoteUpdateWarning | null;
   balance: { messages: string[] } | null;
 };
+
+export const SORT_STRATEGIES = [
+  'Maximum Return',
+  'Maximum Output',
+  'Fastest Transfer',
+  'Lowest Fee',
+] as const;
+
+export type SortStrategy = (typeof SORT_STRATEGIES)[number];
+
+export type QuoteResponse = {
+  requestId: string;
+  swaps?: SwapResult[];
+  diagnosisMessages: string[] | null;
+};
