@@ -70,5 +70,12 @@ export const groupSwapsByDate: GroupBy = (swaps) => {
     }
   });
 
-  return Array.from(output.values());
+  const groupedSwaps = Array.from(output.values()).filter(
+    (item) => item.swaps.length > 0
+  );
+  const items = groupedSwaps.flatMap((group) => group.swaps);
+  const groupCounts = groupedSwaps.map((group) => group.swaps.length);
+  const groups = groupedSwaps.map((group) => group.title);
+
+  return { swaps: items, groupCounts, groups };
 };

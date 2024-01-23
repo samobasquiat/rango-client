@@ -2,16 +2,31 @@ import { css, darkTheme, styled } from '@rango-dev/ui';
 
 export const groupStyles = css();
 
+export const SwapItemContainer = styled('div', {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  margin: '$5 0 $10 0',
+});
+
 export const Group = styled('div', {
   width: '100%',
   display: 'flex',
   flexDirection: 'column',
+  backgroundColor: '$background',
   [`& .${groupStyles}`]: {
     $$color: '$colors$neutral600',
     [`.${darkTheme} &`]: {
       $$color: '$colors$neutral700',
     },
     color: '$$color',
+  },
+  variants: {
+    hasMargin: {
+      true: {
+        marginTop: '$15',
+      },
+    },
   },
 });
 

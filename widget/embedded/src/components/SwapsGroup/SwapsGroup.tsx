@@ -1,8 +1,13 @@
 import type { PropTypes } from './SwapsGroup.types';
 
 import { i18n } from '@lingui/core';
-import { Divider, SwapListItem, Typography } from '@rango-dev/ui';
-import React from 'react';
+import {
+  Divider,
+  GroupedVirtualizedList,
+  SwapListItem,
+  Typography,
+} from '@rango-dev/ui';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   TOKEN_AMOUNT_MAX_DECIMALS,
@@ -11,11 +16,52 @@ import {
 import { getContainer } from '../../utils/common';
 import { formatTooltipNumbers, numberToString } from '../../utils/numbers';
 
-import { Group, groupStyles, SwapList, Time } from './SwapsGroup.styles';
+import {
+  Group,
+  groupStyles,
+  SwapItemContainer,
+  SwapList,
+  Time,
+} from './SwapsGroup.styles';
+
+const ITEMS_PER_PAGE = 10;
 
 export function SwapsGroup(props: PropTypes) {
   const { list, onSwapClick, groupBy, isLoading } = props;
-  const groups = groupBy ? groupBy(list) : [{ title: 'History', swaps: list }];
+  const [currentGroupCounts, setCurrentGroupCounts] = useState<number[]>([]);
+  const loadedItems = useRef(0);
+  const { swaps, groupCounts, groups } = groupBy(list);
+
+  const calculateGroupsSoFar = useCallback(
+    (totalGroups: number[], count: number) => {
+      const groups: number[] = [];
+      let index = 0;
+      do {
+        const group = totalGroups[index];
+        groups.push(Math.min(group, count));
+        count -= group;
+        index++;
+      } while (count > 0 && index <= totalGroups.length);
+      return groups;
+    },
+    []
+  );
+
+  const loadMore = useCallback(() => {
+    const remainedItems = list.length - loadedItems.current;
+    if (remainedItems) {
+      loadedItems.current = Math.min(remainedItems, ITEMS_PER_PAGE);
+      setCurrentGroupCounts(
+        calculateGroupsSoFar(groupCounts, loadedItems.current)
+      );
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (!isLoading) {
+      loadMore();
+    }
+  }, [isLoading]);
 
   if (isLoading) {
     const swaps = [{}, {}];
@@ -62,80 +108,83 @@ export function SwapsGroup(props: PropTypes) {
   }
 
   return (
-    <>
-      {groups
-        .filter((group) => group.swaps.length > 0)
-        .map((group) => (
-          <React.Fragment key={group.title}>
-            <Group>
+    <GroupedVirtualizedList
+      endReached={() => {
+        if (loadedItems.current < list.length) {
+          loadMore();
+        }
+      }}
+      groupCounts={currentGroupCounts}
+      groupContent={(index) => {
+        return (
+          <>
+            <Group hasMargin={index !== 0}>
               <Time>
                 <Typography
                   variant="label"
                   size="medium"
                   className={groupStyles()}>
-                  {group.title}
+                  {groups[index]}
                 </Typography>
               </Time>
-              <Divider size={4} />
-              <SwapList>
-                {group.swaps.map((swap) => {
-                  const firstStep = swap.steps[0];
-
-                  const lastStep = swap.steps[swap.steps.length - 1];
-                  return (
-                    <React.Fragment key={swap.requestId}>
-                      <SwapListItem
-                        requestId={swap.requestId}
-                        creationTime={swap.creationTime}
-                        status={swap.status}
-                        onClick={onSwapClick}
-                        tooltipContainer={getContainer()}
-                        onlyShowTime={group.title === i18n.t('Today')}
-                        swapTokenData={{
-                          from: {
-                            token: {
-                              image: firstStep.fromLogo,
-                              displayName: firstStep.fromSymbol,
-                            },
-                            blockchain: {
-                              image: firstStep.fromBlockchainLogo || '',
-                            },
-                            amount: numberToString(
-                              swap.inputAmount,
-                              TOKEN_AMOUNT_MIN_DECIMALS,
-                              TOKEN_AMOUNT_MAX_DECIMALS
-                            ),
-                            realAmount: formatTooltipNumbers(swap.inputAmount),
-                          },
-                          to: {
-                            token: {
-                              image: lastStep.toLogo,
-                              displayName: lastStep.toSymbol,
-                            },
-                            blockchain: {
-                              image: lastStep.toBlockchainLogo || '',
-                            },
-                            amount: numberToString(
-                              lastStep.outputAmount ||
-                                lastStep.expectedOutputAmountHumanReadable ||
-                                '',
-                              TOKEN_AMOUNT_MIN_DECIMALS,
-                              TOKEN_AMOUNT_MAX_DECIMALS
-                            ),
-                            realAmount: formatTooltipNumbers(
-                              lastStep.outputAmount ||
-                                lastStep.expectedOutputAmountHumanReadable
-                            ),
-                          },
-                        }}
-                      />
-                    </React.Fragment>
-                  );
-                })}
-              </SwapList>
             </Group>
-          </React.Fragment>
-        ))}
-    </>
+          </>
+        );
+      }}
+      itemContent={(index, groupIndex) => {
+        const swap = swaps[index];
+        const firstStep = swap.steps[0];
+        const lastStep = swap.steps[swap.steps.length - 1];
+        return (
+          <SwapItemContainer key={swap.requestId}>
+            <SwapListItem
+              requestId={swap.requestId}
+              creationTime={swap.creationTime}
+              status={swap.status}
+              onClick={onSwapClick}
+              tooltipContainer={getContainer()}
+              onlyShowTime={groups[groupIndex] === i18n.t('Today')}
+              swapTokenData={{
+                from: {
+                  token: {
+                    image: firstStep.fromLogo,
+                    displayName: firstStep.fromSymbol,
+                  },
+                  blockchain: {
+                    image: firstStep.fromBlockchainLogo || '',
+                  },
+                  amount: numberToString(
+                    swap.inputAmount,
+                    TOKEN_AMOUNT_MIN_DECIMALS,
+                    TOKEN_AMOUNT_MAX_DECIMALS
+                  ),
+                  realAmount: formatTooltipNumbers(swap.inputAmount),
+                },
+                to: {
+                  token: {
+                    image: lastStep.toLogo,
+                    displayName: lastStep.toSymbol,
+                  },
+                  blockchain: {
+                    image: lastStep.toBlockchainLogo || '',
+                  },
+                  amount: numberToString(
+                    lastStep.outputAmount ||
+                      lastStep.expectedOutputAmountHumanReadable ||
+                      '',
+                    TOKEN_AMOUNT_MIN_DECIMALS,
+                    TOKEN_AMOUNT_MAX_DECIMALS
+                  ),
+                  realAmount: formatTooltipNumbers(
+                    lastStep.outputAmount ||
+                      lastStep.expectedOutputAmountHumanReadable
+                  ),
+                },
+              }}
+            />
+          </SwapItemContainer>
+        );
+      }}
+    />
   );
 }
