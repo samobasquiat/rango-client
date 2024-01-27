@@ -78,7 +78,7 @@ export function ConfirmWalletsModal(props: PropTypes) {
       ? selectedQuote.result
       : selectedQuote;
 
-  const requiredWallets = getRequiredWallets(quote);
+  const requiredWallets = getRequiredWallets(quote?.swaps || null);
 
   const lastStepToBlockchain = blockchains.find(
     (blockchain) =>

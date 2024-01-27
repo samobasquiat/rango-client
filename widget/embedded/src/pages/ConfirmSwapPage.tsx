@@ -215,7 +215,7 @@ export function ConfirmSwapPage() {
     let quoteWalletsChanged = false;
 
     if (quoteChanged) {
-      let requiredWallets = getRequiredWallets(quote);
+      let requiredWallets = getRequiredWallets(quote?.swaps || null);
 
       const lastStepToBlockchain =
         quote?.swaps[quote.swaps.length - 1].to.blockchain;
