@@ -37,13 +37,14 @@ export function Modal(props: PropsWithChildren<PropTypes>) {
     suffix,
     footer,
     hasLogo = true,
+    hasCloseIcon = true,
   } = props;
   const [active, setActive] = useState(false);
   const [isMount, setIsMount] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleBackDropClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.target === event.currentTarget) {
+    if (event.target === event.currentTarget && dismissible) {
       onClose();
     }
   };
@@ -96,7 +97,7 @@ export function Modal(props: PropsWithChildren<PropTypes>) {
                   )}
                   <Flex>
                     {suffix}
-                    {dismissible && (
+                    {dismissible && hasCloseIcon && (
                       <IconButton onClick={onClose} variant="ghost">
                         <CloseIcon color="gray" size={14} />
                       </IconButton>
