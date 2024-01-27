@@ -28,6 +28,7 @@ export { default as LightModeIcon } from './LightMode';
 export { default as LinkIcon } from './Link';
 export { default as LoadingIcon } from './Loading';
 export { default as LogoWithTextIcon } from './LogoWithText';
+export { default as MenuIcon } from './Menu';
 export { default as NoRouteIcon } from './NoRoute';
 export { default as NextIcon } from './Next';
 export { default as NoNotificationIcon } from './NoNotification';

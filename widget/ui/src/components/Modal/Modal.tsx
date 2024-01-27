@@ -43,7 +43,7 @@ export function Modal(props: PropsWithChildren<PropTypes>) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleBackDropClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.target === event.currentTarget && dismissible) {
+    if (event.target === event.currentTarget) {
       onClose();
     }
   };
