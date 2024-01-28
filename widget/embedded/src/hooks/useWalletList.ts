@@ -1,14 +1,14 @@
 import type { WidgetConfig } from '../types';
-import type { WalletInfo } from '@rango-dev/ui';
+import type { WalletInfo } from '@samo-dev/ui';
 import type { BlockchainMeta } from 'rango-sdk';
 
-import { WalletState } from '@rango-dev/ui';
-import { useWallets } from '@rango-dev/wallets-react';
+import { WalletState } from '@samo-dev/ui';
+import { useWallets } from '@samo-dev/wallets-react';
 import {
   KEPLR_COMPATIBLE_WALLETS,
   type WalletType,
   WalletTypes,
-} from '@rango-dev/wallets-shared';
+} from '@samo-dev/wallets-shared';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useAppStore } from '../store/AppStore';

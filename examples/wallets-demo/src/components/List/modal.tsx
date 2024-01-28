@@ -1,4 +1,4 @@
-import type { WalletType } from '@rango-dev/wallets-shared';
+import type { WalletType } from '@samo-dev/wallets-shared';
 import type {
   Asset,
   BestRouteRequest,
@@ -7,9 +7,9 @@ import type {
   TransactionType,
 } from 'rango-sdk';
 
-import { Button, Divider, Modal, styled, Typography } from '@rango-dev/ui';
-import { useWallets } from '@rango-dev/wallets-react';
-import { isEvmAddress, Networks } from '@rango-dev/wallets-shared';
+import { Button, Divider, Modal, styled, Typography } from '@samo-dev/ui';
+import { useWallets } from '@samo-dev/wallets-react';
+import { isEvmAddress, Networks } from '@samo-dev/wallets-shared';
 import {
   isCosmosBlockchain,
   isEvmBlockchain,

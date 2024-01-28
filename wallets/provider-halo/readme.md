@@ -1,1 +1,1 @@
-# @rango-dev/provider-halo
+# @samo-dev/provider-halo

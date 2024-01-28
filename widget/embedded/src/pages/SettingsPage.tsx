@@ -9,7 +9,7 @@ import {
   Switch,
   Tooltip,
   Typography,
-} from '@rango-dev/ui';
+} from '@samo-dev/ui';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 

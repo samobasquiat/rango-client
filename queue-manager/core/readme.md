@@ -1,1 +1,1 @@
-# @rango-dev/queue-manager-core
+# @samo-dev/queue-manager-core

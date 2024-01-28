@@ -1,5 +1,5 @@
-import type { WalletType } from '@rango-dev/wallets-shared';
-import type { WidgetConfig } from '@rango-dev/widget-embedded';
+import type { WalletType } from '@samo-dev/wallets-shared';
+import type { WidgetConfig } from '@samo-dev/widget-embedded';
 
 import {
   Button,
@@ -8,9 +8,9 @@ import {
   Switch,
   Typography,
   WalletIcon,
-} from '@rango-dev/ui';
-import { WalletTypes } from '@rango-dev/wallets-shared';
-import { useWallets } from '@rango-dev/widget-embedded';
+} from '@samo-dev/ui';
+import { WalletTypes } from '@samo-dev/wallets-shared';
+import { useWallets } from '@samo-dev/widget-embedded';
 import React from 'react';
 
 import { MultiSelect } from '../../components/MultiSelect';

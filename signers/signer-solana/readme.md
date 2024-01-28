@@ -1,1 +1,1 @@
-# @rango-dev/signer-solana
+# @samo-dev/signer-solana

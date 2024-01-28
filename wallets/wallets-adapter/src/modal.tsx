@@ -1,7 +1,7 @@
-import type { WalletType } from '@rango-dev/wallets-shared';
+import type { WalletType } from '@samo-dev/wallets-shared';
 
-import { ConnectWalletsModal } from '@rango-dev/ui';
-import { useWallets } from '@rango-dev/wallets-react';
+import { ConnectWalletsModal } from '@samo-dev/ui';
+import { useWallets } from '@samo-dev/wallets-react';
 import React, { useState } from 'react';
 
 import { mapWalletTypesToWalletInfo } from './helpers';

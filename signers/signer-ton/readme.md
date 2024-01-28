@@ -1,1 +1,1 @@
-# @rango-dev/signer-ton
+# @samo-dev/signer-ton

@@ -1,4 +1,4 @@
-import { Collapsible, styled } from '@rango-dev/ui';
+import { Collapsible, styled } from '@samo-dev/ui';
 
 export const CollapseContainer = styled(Collapsible, {
   borderRadius: '$xm',

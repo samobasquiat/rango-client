@@ -1,4 +1,4 @@
-import { Button, darkTheme, styled } from '@rango-dev/ui';
+import { Button, darkTheme, styled } from '@samo-dev/ui';
 
 export const Layout = styled('div', {
   borderRadius: '20px',

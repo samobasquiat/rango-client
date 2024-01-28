@@ -1,1 +1,1 @@
-# @rango-dev/wallets-demo
+# @samo-dev/wallets-demo

@@ -1,1 +1,1 @@
-# @rango-dev/wallets-core
+# @samo-dev/wallets-core

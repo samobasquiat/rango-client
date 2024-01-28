@@ -1,4 +1,4 @@
-import { Networks, ProviderConnectResult } from '@rango-dev/wallets-shared';
+import { Networks, ProviderConnectResult } from '@samo-dev/wallets-shared';
 
 export function exodus_instances() {
   const { exodus } = window;

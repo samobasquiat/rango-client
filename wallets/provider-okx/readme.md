@@ -1,1 +1,1 @@
-# @rango-dev/provider-okx
+# @samo-dev/provider-okx

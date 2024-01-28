@@ -1,1 +1,1 @@
-# @rango-dev/provider-xdefi
+# @samo-dev/provider-xdefi

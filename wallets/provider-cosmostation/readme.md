@@ -1,1 +1,1 @@
-# @rango-dev/provider-cosmostation
+# @samo-dev/provider-cosmostation

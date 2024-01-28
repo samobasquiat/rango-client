@@ -1,12 +1,12 @@
 import type { ModalState, State } from './types';
-import type { WalletInfo as ModalWalletInfo } from '@rango-dev/ui';
+import type { WalletInfo as ModalWalletInfo } from '@samo-dev/ui';
 import type {
   WalletInfo,
   WalletState,
   WalletType,
-} from '@rango-dev/wallets-shared';
+} from '@samo-dev/wallets-shared';
 
-import { WalletState as WalletStatus } from '@rango-dev/ui';
+import { WalletState as WalletStatus } from '@samo-dev/ui';
 
 export const defaultState: ModalState = {
   open: false,

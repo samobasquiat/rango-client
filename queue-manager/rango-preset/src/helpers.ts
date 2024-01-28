@@ -15,14 +15,14 @@ import type {
   QueueInfo,
   QueueName,
   QueueType,
-} from '@rango-dev/queue-manager-core';
+} from '@samo-dev/queue-manager-core';
 import type {
   Meta,
   Network,
   Providers,
   WalletState,
   WalletType,
-} from '@rango-dev/wallets-shared';
+} from '@samo-dev/wallets-shared';
 import type {
   CreateTransactionResponse,
   EvmBlockchainMeta,
@@ -36,13 +36,13 @@ import type {
   StepStatus,
 } from 'rango-types';
 
-import { Status } from '@rango-dev/queue-manager-core';
-import { readAccountAddress } from '@rango-dev/wallets-core';
+import { Status } from '@samo-dev/queue-manager-core';
+import { readAccountAddress } from '@samo-dev/wallets-core';
 import {
   getBlockChainNameFromId,
   getEvmProvider,
   splitWalletNetwork,
-} from '@rango-dev/wallets-shared';
+} from '@samo-dev/wallets-shared';
 import { TransactionType } from 'rango-sdk';
 import { PendingSwapNetworkStatus } from 'rango-types';
 

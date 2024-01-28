@@ -1,4 +1,4 @@
-import type { WalletState } from '@rango-dev/ui';
+import type { WalletState } from '@samo-dev/ui';
 
 export interface PropTypes {
   open: boolean;

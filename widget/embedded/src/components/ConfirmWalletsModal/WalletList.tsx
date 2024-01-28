@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import type { PropTypes } from './WalletList.type';
 import type { Wallet } from '../../types';
-import type { WalletInfo } from '@rango-dev/ui';
-import type { WalletType } from '@rango-dev/wallets-shared';
+import type { WalletInfo } from '@samo-dev/ui';
+import type { WalletType } from '@samo-dev/wallets-shared';
 
 import { i18n } from '@lingui/core';
 import {
@@ -14,7 +14,7 @@ import {
   SelectableWallet,
   Typography,
   WalletState,
-} from '@rango-dev/ui';
+} from '@samo-dev/ui';
 import React, { useEffect, useState } from 'react';
 
 import { useWallets } from '../..';

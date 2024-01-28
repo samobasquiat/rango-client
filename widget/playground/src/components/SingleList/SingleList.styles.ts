@@ -1,4 +1,4 @@
-import { Button, styled } from '@rango-dev/ui';
+import { Button, styled } from '@samo-dev/ui';
 
 export const HeaderContainer = styled('div', {
   display: 'flex',

@@ -1,1 +1,1 @@
-# @rango-dev/signer-starknet
+# @samo-dev/signer-starknet

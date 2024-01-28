@@ -1,1 +1,1 @@
-# @rango-dev/signer-tron
+# @samo-dev/signer-tron

@@ -3,7 +3,7 @@ import {
   createTheme,
   darkTheme as defaultDarkTheme,
   lightTheme as defaultLightTheme,
-} from '@rango-dev/ui';
+} from '@samo-dev/ui';
 import { useEffect, useState } from 'react';
 
 import { useAppStore } from '../store/AppStore';

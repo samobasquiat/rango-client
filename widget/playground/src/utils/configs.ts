@@ -1,4 +1,4 @@
-import type { Tokens } from '@rango-dev/widget-embedded';
+import type { Tokens } from '@samo-dev/widget-embedded';
 import type { Token } from 'rango-sdk';
 
 import { tokensAreEqual } from './common';

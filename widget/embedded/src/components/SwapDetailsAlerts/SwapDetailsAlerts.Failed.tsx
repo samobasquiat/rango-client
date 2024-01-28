@@ -5,7 +5,7 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   IconButton,
-} from '@rango-dev/ui';
+} from '@samo-dev/ui';
 import React, { useState } from 'react';
 
 export function FailedAlert(props: FailedAlertsProps) {

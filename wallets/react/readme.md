@@ -1,1 +1,1 @@
-# @rango-dev/wallets-react
+# @samo-dev/wallets-react
