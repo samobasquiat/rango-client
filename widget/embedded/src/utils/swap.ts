@@ -9,7 +9,7 @@ import type {
   SwapButtonState,
   Wallet,
 } from '../types';
-import type { WalletType } from '@rango-dev/wallets-shared';
+import type { WalletType } from '@samo-dev/wallets-shared';
 import type {
   BestRouteRequest,
   BestRouteResponse,

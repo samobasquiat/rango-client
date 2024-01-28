@@ -1,7 +1,7 @@
-import type { WalletType } from '@rango-dev/wallets-shared';
+import type { WalletType } from '@samo-dev/wallets-shared';
 
 import { i18n } from '@lingui/core';
-import { styled, Typography, Wallet, WalletState } from '@rango-dev/ui';
+import { styled, Typography, Wallet, WalletState } from '@samo-dev/ui';
 import React, { useState } from 'react';
 
 import { Layout, PageContainer } from '../components/Layout';

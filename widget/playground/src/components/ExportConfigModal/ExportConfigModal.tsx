@@ -12,7 +12,7 @@ import {
   ModalHeader,
   TextField,
   Typography,
-} from '@rango-dev/ui';
+} from '@samo-dev/ui';
 import React, { Fragment, useState } from 'react';
 import {
   atomDark as dark,

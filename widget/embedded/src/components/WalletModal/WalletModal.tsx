@@ -1,6 +1,6 @@
 import type { PropTypes } from './WalletModal.types';
 
-import { Divider, Modal } from '@rango-dev/ui';
+import { Divider, Modal } from '@samo-dev/ui';
 import React from 'react';
 
 import { WIDGET_UI_ID } from '../../constants';

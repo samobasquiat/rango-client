@@ -1,6 +1,6 @@
-import type { WalletType } from '@rango-dev/wallets-shared';
+import type { WalletType } from '@samo-dev/wallets-shared';
 
-import { I18nManager } from '@rango-dev/ui';
+import { I18nManager } from '@samo-dev/ui';
 import React, { useContext, useEffect, useState } from 'react';
 
 import { AppRouter } from '../../components/AppRouter';

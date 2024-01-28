@@ -1,1 +1,1 @@
-# @rango-dev/provider-argentx
+# @samo-dev/provider-argentx

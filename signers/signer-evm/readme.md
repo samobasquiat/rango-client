@@ -1,1 +1,1 @@
-# @rango-dev/signer-evm
+# @samo-dev/signer-evm

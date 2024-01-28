@@ -1,4 +1,4 @@
-import { globalCss } from '@rango-dev/ui';
+import { globalCss } from '@samo-dev/ui';
 
 export const globalFont = () =>
   globalCss({

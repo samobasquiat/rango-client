@@ -1,1 +1,1 @@
-# @rango-dev/provider-all
+# @samo-dev/provider-all

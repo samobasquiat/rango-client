@@ -1,1 +1,1 @@
-# @rango-dev/signer-cosmos
+# @samo-dev/signer-cosmos

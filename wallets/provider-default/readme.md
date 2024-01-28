@@ -1,1 +1,1 @@
-# @rango-dev/provider-default
+# @samo-dev/provider-default

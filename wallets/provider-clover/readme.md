@@ -1,1 +1,1 @@
-# @rango-dev/provider-clover
+# @samo-dev/provider-clover

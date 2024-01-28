@@ -11,7 +11,7 @@ import {
   RadioRoot,
   Typography,
   VirtualizedList,
-} from '@rango-dev/ui';
+} from '@samo-dev/ui';
 import React, { forwardRef, useEffect, useState } from 'react';
 
 import { SearchInput } from '../SearchInput';

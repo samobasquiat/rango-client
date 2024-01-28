@@ -1,5 +1,5 @@
 import React from 'react';
-import { useWallets } from '@rango-dev/wallets-react';
+import { useWallets } from '@samo-dev/wallets-react';
 
 function Wallets() {
   const { connect, providers, state, disconnect } = useWallets();

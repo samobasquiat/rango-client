@@ -8,7 +8,7 @@ import {
   Switch,
   Typography,
   WidthIcon,
-} from '@rango-dev/ui';
+} from '@samo-dev/ui';
 import React, { useState } from 'react';
 
 import { SideNavigation } from '../../components/SideNavigation';

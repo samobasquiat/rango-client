@@ -1,6 +1,6 @@
 import type { CustomColorsTypes } from './StyleLayout.types';
 import type { Mode } from '../../store/config';
-import type { WidgetColorsKeys } from '@rango-dev/widget-embedded';
+import type { WidgetColorsKeys } from '@samo-dev/widget-embedded';
 
 import {
   ChevronDownIcon,
@@ -9,7 +9,7 @@ import {
   CustomColorsIcon,
   Divider,
   Typography,
-} from '@rango-dev/ui';
+} from '@samo-dev/ui';
 import React, { useEffect, useState } from 'react';
 
 import { ColorPicker } from '../../components/ColorPicker';

@@ -1,1 +1,1 @@
-# @rango-dev/provider-math-wallet
+# @samo-dev/provider-math-wallet

@@ -1,6 +1,6 @@
-import { DefaultEvmSigner } from '@rango-dev/signer-evm';
-import { DefaultCosmosSigner } from '@rango-dev/signer-cosmos';
-import { Networks, getNetworkInstance } from '@rango-dev/wallets-shared';
+import { DefaultEvmSigner } from '@samo-dev/signer-evm';
+import { DefaultCosmosSigner } from '@samo-dev/signer-cosmos';
+import { Networks, getNetworkInstance } from '@samo-dev/wallets-shared';
 import {
   DefaultSignerFactory,
   SignerFactory,

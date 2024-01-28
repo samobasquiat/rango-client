@@ -1,4 +1,4 @@
-import { Widget, WidgetProvider } from '@rango-dev/widget-embedded';
+import { Widget, WidgetProvider } from '@samo-dev/widget-embedded';
 import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 

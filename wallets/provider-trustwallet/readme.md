@@ -1,1 +1,1 @@
-# @rango-dev/provider-trustwallet
+# @samo-dev/provider-trustwallet

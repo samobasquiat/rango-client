@@ -1,6 +1,6 @@
 import type { WidgetConfig } from '../types';
 import type { ProvidersOptions } from '../utils/providers';
-import type { ProviderInterface } from '@rango-dev/wallets-react';
+import type { ProviderInterface } from '@samo-dev/wallets-react';
 
 import { useEffect } from 'react';
 

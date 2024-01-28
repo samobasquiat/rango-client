@@ -1,1 +1,1 @@
-# @rango-dev/provider-tron-link
+# @samo-dev/provider-tron-link

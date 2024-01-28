@@ -2,7 +2,7 @@ import {
   Network,
   Networks,
   ProviderConnectResult,
-} from '@rango-dev/wallets-shared';
+} from '@samo-dev/wallets-shared';
 
 type Provider = Map<Network, any>;
 

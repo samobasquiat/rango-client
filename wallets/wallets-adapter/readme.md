@@ -1,1 +1,1 @@
-# @rango-dev/provider-adapter
+# @samo-dev/provider-adapter

@@ -1,7 +1,7 @@
 import type { WalletStateContentProps } from './SwapDetailsModal.types';
 
-import { MessageBox, Wallet, WalletState } from '@rango-dev/ui';
-import { useWallets } from '@rango-dev/wallets-react';
+import { MessageBox, Wallet, WalletState } from '@samo-dev/ui';
+import { useWallets } from '@samo-dev/wallets-react';
 import React, { useEffect, useRef } from 'react';
 
 import { getContainer } from '../../utils/common';

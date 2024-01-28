@@ -1,4 +1,4 @@
-import { darkTheme, styled } from '@rango-dev/ui';
+import { darkTheme, styled } from '@samo-dev/ui';
 
 export const Alerts = styled('div', {
   width: '100%',

@@ -1,1 +1,1 @@
-# @rango-dev/provider-keplr
+# @samo-dev/provider-keplr

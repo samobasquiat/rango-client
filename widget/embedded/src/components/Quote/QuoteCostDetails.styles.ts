@@ -1,4 +1,4 @@
-import { css, styled } from '@rango-dev/ui';
+import { css, styled } from '@samo-dev/ui';
 
 export const FeeSection = styled('div', {
   display: 'flex',

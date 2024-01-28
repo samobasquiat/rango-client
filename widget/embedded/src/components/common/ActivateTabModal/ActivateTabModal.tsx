@@ -1,7 +1,7 @@
 import type { PropTypes } from './ActivateTabModal.types';
 
 import { i18n } from '@lingui/core';
-import { Button, Divider, MessageBox, Modal } from '@rango-dev/ui';
+import { Button, Divider, MessageBox, Modal } from '@samo-dev/ui';
 import React from 'react';
 
 import { getContainer } from '../../../utils/common';
