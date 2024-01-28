@@ -8,7 +8,7 @@ msgstr ""
 "Language: ja\n"
 "Project-Id-Version: client-samo\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2024-01-28 10:55\n"
+"PO-Revision-Date: 2024-01-28 10:59\n"
 "Last-Translator: \n"
 "Language-Team: Japanese\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -17,11 +17,6 @@ msgstr ""
 "X-Crowdin-Language: ja\n"
 "X-Crowdin-File: en.po\n"
 "X-Crowdin-File-ID: 2\n"
-
-#. js-lingui-explicit-id
-#: widget/ui/src/components/SwapListItem/SwapListItem.helpers.ts:8
-msgid "Failed and Done"
-msgstr ""
 
 #. js-lingui-explicit-id
 #: widget/embedded/src/components/BlockchainList/BlockchainList.tsx:37
@@ -1006,6 +1001,11 @@ msgstr "{toChain} 経由で {swapper}に橋"
 #: widget/ui/src/components/SwapDetailsPlaceholder/SwapDetailsPlaceholder.tsx:28
 msgid "Swap Details"
 msgstr "スワップの詳細"
+
+#. js-lingui-explicit-id
+#: widget/ui/src/components/SwapListItem/SwapListItem.helpers.ts:8
+msgid "Failed and Done"
+msgstr "失敗して完了しました"
 
 #. js-lingui-explicit-id
 #: widget/ui/src/components/SwapListItem/SwapListItem.helpers.ts:10

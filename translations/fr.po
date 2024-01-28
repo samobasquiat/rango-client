@@ -8,7 +8,7 @@ msgstr ""
 "Language: fr\n"
 "Project-Id-Version: client-samo\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2024-01-28 10:55\n"
+"PO-Revision-Date: 2024-01-28 10:59\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
@@ -17,11 +17,6 @@ msgstr ""
 "X-Crowdin-Language: fr\n"
 "X-Crowdin-File: en.po\n"
 "X-Crowdin-File-ID: 2\n"
-
-#. js-lingui-explicit-id
-#: widget/ui/src/components/SwapListItem/SwapListItem.helpers.ts:8
-msgid "Failed and Done"
-msgstr ""
 
 #. js-lingui-explicit-id
 #: widget/embedded/src/components/BlockchainList/BlockchainList.tsx:37
@@ -1006,6 +1001,11 @@ msgstr "Pont vers {toChain} via {swapper}"
 #: widget/ui/src/components/SwapDetailsPlaceholder/SwapDetailsPlaceholder.tsx:28
 msgid "Swap Details"
 msgstr "Permuter les détails"
+
+#. js-lingui-explicit-id
+#: widget/ui/src/components/SwapListItem/SwapListItem.helpers.ts:8
+msgid "Failed and Done"
+msgstr "Échoué et Fait"
 
 #. js-lingui-explicit-id
 #: widget/ui/src/components/SwapListItem/SwapListItem.helpers.ts:10
