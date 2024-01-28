@@ -6,8 +6,7 @@ export const SwapItemContainer = styled('div', {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  margin: '$5 0 $10 0',
-  padding: '0 $5',
+  padding: '$5',
 });
 
 export const Group = styled('div', {
@@ -15,20 +14,13 @@ export const Group = styled('div', {
   display: 'flex',
   flexDirection: 'column',
   backgroundColor: '$background',
-  padding: '0 $5',
+  padding: '$10 $5 0 $5',
   [`& .${groupStyles}`]: {
     $$color: '$colors$neutral600',
     [`.${darkTheme} &`]: {
       $$color: '$colors$neutral700',
     },
     color: '$$color',
-  },
-  variants: {
-    hasMargin: {
-      true: {
-        marginTop: '$15',
-      },
-    },
   },
 });
 

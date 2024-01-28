@@ -50,18 +50,18 @@ export function SwapsGroup(props: PropTypes) {
   const loadMore = useCallback(() => {
     const remainedItems = list.length - loadedItems.current;
     if (remainedItems) {
-      loadedItems.current = Math.min(remainedItems, ITEMS_PER_PAGE);
+      loadedItems.current += Math.min(remainedItems, ITEMS_PER_PAGE);
       setCurrentGroupCounts(
         calculateGroupsSoFar(groupCounts, loadedItems.current)
       );
     }
-  }, [isLoading]);
+  }, [list.length]);
 
   useEffect(() => {
     if (!isLoading) {
       loadMore();
     }
-  }, [isLoading]);
+  }, [isLoading, loadMore]);
 
   if (isLoading) {
     const swaps = [{}, {}];
@@ -117,18 +117,16 @@ export function SwapsGroup(props: PropTypes) {
       groupCounts={currentGroupCounts}
       groupContent={(index) => {
         return (
-          <>
-            <Group hasMargin={index !== 0}>
-              <Time>
-                <Typography
-                  variant="label"
-                  size="medium"
-                  className={groupStyles()}>
-                  {groups[index]}
-                </Typography>
-              </Time>
-            </Group>
-          </>
+          <Group>
+            <Time>
+              <Typography
+                variant="label"
+                size="medium"
+                className={groupStyles()}>
+                {groups[index]}
+              </Typography>
+            </Time>
+          </Group>
         );
       }}
       itemContent={(index, groupIndex) => {
