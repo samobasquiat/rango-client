@@ -5,7 +5,7 @@ import { i18n } from '@lingui/core';
 export function getStatus(status: Status): string {
   switch (status) {
     case 'failed':
-      return i18n.t('Failed');
+      return i18n.t('Failed and Done');
     case 'success':
       return i18n.t('Complete');
     default:

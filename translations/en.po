@@ -1001,8 +1001,8 @@ msgstr "Swap Details"
 
 #. js-lingui-explicit-id
 #: widget/ui/src/components/SwapListItem/SwapListItem.helpers.ts:8
-msgid "Failed"
-msgstr "Failed"
+msgid "Failed and Done"
+msgstr "Failed and Done"
 
 #. js-lingui-explicit-id
 #: widget/ui/src/components/SwapListItem/SwapListItem.helpers.ts:10
