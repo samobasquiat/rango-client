@@ -1,4 +1,4 @@
-import type { GroupBy } from '../components/SwapsGroup/SwapsGroup.types';
+import type { GroupBy } from '../components/HistoryGroupedList/HistoryGroupedList.types';
 import type { PendingSwap } from 'rango-types';
 
 import { i18n } from '@lingui/core';

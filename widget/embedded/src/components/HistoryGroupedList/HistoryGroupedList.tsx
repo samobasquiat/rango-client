@@ -1,4 +1,4 @@
-import type { PropTypes } from './SwapsGroup.types';
+import type { PropTypes } from './HistoryGroupedList.types';
 
 import { i18n } from '@lingui/core';
 import {
@@ -22,11 +22,11 @@ import {
   SwapItemContainer,
   SwapList,
   Time,
-} from './SwapsGroup.styles';
+} from './HistoryGroupedList.styles';
 
 const ITEMS_PER_PAGE = 10;
 
-export function SwapsGroup(props: PropTypes) {
+export function HistoryGroupedList(props: PropTypes) {
   const { list, onSwapClick, groupBy, isLoading } = props;
   const [currentGroupCounts, setCurrentGroupCounts] = useState<number[]>([]);
   const loadedItems = useRef(0);
