@@ -1,10 +1,10 @@
-import { WalletConfig, WalletType } from '@rango-dev/wallets-shared';
-import Wallet, { Persistor } from '@rango-dev/wallets-core';
+import { WalletConfig, WalletType } from '@samo-dev/wallets-shared';
+import Wallet, { Persistor } from '@samo-dev/wallets-core';
 import type {
   Options,
   State as WalletState,
   EventHandler as WalletEventHandler,
-} from '@rango-dev/wallets-core';
+} from '@samo-dev/wallets-core';
 import {
   State,
   WalletActions,

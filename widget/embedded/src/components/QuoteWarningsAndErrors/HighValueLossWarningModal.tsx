@@ -8,7 +8,7 @@ import {
   Modal,
   Typography,
   WarningIcon,
-} from '@rango-dev/ui';
+} from '@samo-dev/ui';
 import React from 'react';
 
 import { errorMessages } from '../../constants/errors';

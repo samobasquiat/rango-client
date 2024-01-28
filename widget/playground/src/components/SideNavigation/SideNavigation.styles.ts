@@ -1,4 +1,4 @@
-import { styled } from '@rango-dev/ui';
+import { styled } from '@samo-dev/ui';
 
 const Flex = styled('div', {
   display: 'flex',

@@ -1,4 +1,4 @@
-import { styled } from '@rango-dev/ui';
+import { styled } from '@samo-dev/ui';
 
 const WIDGET_HEIGHT = '700px';
 export const Container = styled('div', {
@@ -36,7 +36,6 @@ export const Content = styled('div', {
   overflowY: 'auto',
 });
 export const Footer = styled('div', {
-  backgroundColor: '$background',
   '& .footer__content': {
     padding: '$0 $20',
   },

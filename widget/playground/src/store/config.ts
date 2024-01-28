@@ -1,12 +1,12 @@
 import type { Type } from '../types';
-import type { WalletType } from '@rango-dev/wallets-shared';
+import type { WalletType } from '@samo-dev/wallets-shared';
 import type {
   ProviderInterface,
   Tokens,
   WidgetColors,
   WidgetColorsKeys,
   WidgetConfig,
-} from '@rango-dev/widget-embedded';
+} from '@samo-dev/widget-embedded';
 import type { Asset } from 'rango-sdk';
 
 import { create } from 'zustand';

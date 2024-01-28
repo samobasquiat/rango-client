@@ -9,7 +9,7 @@ import {
   Divider,
   Typography,
   WalletIcon,
-} from '@rango-dev/ui';
+} from '@samo-dev/ui';
 import React, { useState } from 'react';
 
 import { MultiList } from '../MultiList';

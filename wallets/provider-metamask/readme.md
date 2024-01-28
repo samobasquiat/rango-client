@@ -1,1 +1,1 @@
-# @rango-dev/provider-metamask
+# @samo-dev/provider-metamask

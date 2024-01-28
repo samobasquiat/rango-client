@@ -1,1 +1,1 @@
-# @rango-dev/provider-braavos
+# @samo-dev/provider-braavos

@@ -1,1 +1,1 @@
-# @rango-dev/provider-coinbase
+# @samo-dev/provider-coinbase

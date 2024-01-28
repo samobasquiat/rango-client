@@ -1,5 +1,5 @@
 import type { WidgetConfig } from '../../types';
-import type { EventHandler } from '@rango-dev/wallets-react';
+import type { EventHandler } from '@samo-dev/wallets-react';
 
 export type OnConnectHandler = (key: string) => void;
 export interface WidgetContextInterface {

@@ -1,3 +1,3 @@
-# @rango-dev/widget-embedded
+# @samo-dev/widget-embedded
 
 Rango Embedded Widget

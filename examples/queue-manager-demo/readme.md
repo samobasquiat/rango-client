@@ -1,1 +1,1 @@
-# @rango-dev/queue-manager-demo
+# @samo-dev/queue-manager-demo

@@ -1,1 +1,1 @@
-# @rango-dev/provider-tokenpocket
+# @samo-dev/provider-tokenpocket

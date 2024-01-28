@@ -1,1 +1,1 @@
-# @rango-dev/provider-bitget
+# @samo-dev/provider-bitget

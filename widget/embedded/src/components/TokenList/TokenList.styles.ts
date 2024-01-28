@@ -4,7 +4,7 @@ import {
   ImageContainer,
   styled,
   Typography,
-} from '@rango-dev/ui';
+} from '@samo-dev/ui';
 
 export const tokenNameStyles = css({
   position: 'absolute',

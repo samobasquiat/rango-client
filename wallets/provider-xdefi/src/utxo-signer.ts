@@ -3,8 +3,8 @@ import { xdefiTransfer } from './helpers';
 import {
   XDEFI_WALLET_SUPPORTED_NATIVE_CHAINS,
   getNetworkInstance,
-} from '@rango-dev/wallets-shared';
-import { Networks } from '@rango-dev/wallets-shared';
+} from '@samo-dev/wallets-shared';
+import { Networks } from '@samo-dev/wallets-shared';
 
 // TODO - replace with real type
 // tslint:disable-next-line: no-any

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import type { PropTypes } from './WalletList.type';
 import type { Wallet } from '../../types';
-import type { WalletInfo } from '@rango-dev/ui';
-import type { WalletType } from '@rango-dev/wallets-shared';
+import type { WalletInfo } from '@samo-dev/ui';
+import type { WalletType } from '@samo-dev/wallets-shared';
 
 import { i18n } from '@lingui/core';
 import {
@@ -14,11 +14,11 @@ import {
   SelectableWallet,
   Typography,
   WalletState,
-} from '@rango-dev/ui';
+} from '@samo-dev/ui';
 import React, { useEffect, useState } from 'react';
 
 import { useWallets } from '../..';
-import { RANGO_SWAP_BOX_ID } from '../../constants';
+import { WIDGET_UI_ID } from '../../constants';
 import { useWalletList } from '../../hooks/useWalletList';
 import {
   TIME_TO_CLOSE_MODAL,
@@ -59,23 +59,24 @@ export function WalletList(props: PropTypes) {
     useState<'in-progress' | 'completed' | 'rejected' | null>(null);
   const { suggestAndConnect } = useWallets();
   let modalTimerId: ReturnType<typeof setTimeout> | null = null;
-  const { list, error, handleClick } = useWalletList({
-    config,
-    chain,
-    onBeforeConnect: (type) => {
-      modalTimerId = setTimeout(() => {
-        setOpenWalletStateModal(type);
-      }, TIME_TO_IGNORE_MODAL);
-    },
-    onConnect: () => {
-      if (modalTimerId) {
-        clearTimeout(modalTimerId);
-      }
-      setTimeout(() => {
-        setOpenWalletStateModal('');
-      }, TIME_TO_CLOSE_MODAL);
-    },
-  });
+  const { list, error, handleClick, disconnectConnectingWallets } =
+    useWalletList({
+      config,
+      chain,
+      onBeforeConnect: (type) => {
+        modalTimerId = setTimeout(() => {
+          setOpenWalletStateModal(type);
+        }, TIME_TO_IGNORE_MODAL);
+      },
+      onConnect: () => {
+        if (modalTimerId) {
+          clearTimeout(modalTimerId);
+        }
+        setTimeout(() => {
+          setOpenWalletStateModal('');
+        }, TIME_TO_CLOSE_MODAL);
+      },
+    });
   const [sortedList, setSortedList] = useState<WalletInfo[]>(list);
   const numberOfSupportedWallets = list.length;
   const shouldShowMoreWallets = limit && numberOfSupportedWallets - limit > 0;
@@ -111,7 +112,7 @@ export function WalletList(props: PropTypes) {
   }, [JSON.stringify(list)]);
 
   const modalContainer = document.getElementById(
-    RANGO_SWAP_BOX_ID
+    WIDGET_UI_ID.SWAP_BOX_ID
   ) as HTMLDivElement;
 
   useEffect(() => {
@@ -132,6 +133,11 @@ export function WalletList(props: PropTypes) {
       }
     };
   }, [addingExperimentalChainStatus]);
+
+  const handleCloseWalletModal = () => {
+    disconnectConnectingWallets();
+    setOpenWalletStateModal('');
+  };
 
   return (
     <>
@@ -193,7 +199,7 @@ export function WalletList(props: PropTypes) {
           <>
             <WalletModal
               open={openWalletStateModal === wallet.type}
-              onClose={() => setOpenWalletStateModal('')}
+              onClose={handleCloseWalletModal}
               image={wallet.image}
               state={wallet.state}
               error={error}

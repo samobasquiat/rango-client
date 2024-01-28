@@ -1,5 +1,5 @@
 import { i18n } from '@lingui/core';
-import { Button, Divider, styled, SwapInput, WarningIcon } from '@rango-dev/ui';
+import { Button, Divider, styled, SwapInput, WarningIcon } from '@samo-dev/ui';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -62,7 +62,7 @@ export function Home() {
     setQuoteWarningsConfirmed,
   } = useQuoteStore();
 
-  const fetchMetaStatus = useAppStore().fetchStatus;
+  const { config, fetchStatus: fetchMetaStatus } = useAppStore();
 
   const { connectedWallets, getBalanceFor } = useWalletsStore();
   const { isActiveTab } = useUiStore();
@@ -152,7 +152,7 @@ export function Home() {
           navigate(navigationRoutes.wallets);
         },
         hasBackButton: false,
-        title: i18n.t('Swap'),
+        title: config.title || i18n.t('Swap'),
         suffix: (
           <HomeButtons
             onClickRefresh={

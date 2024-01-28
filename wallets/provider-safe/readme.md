@@ -1,1 +1,1 @@
-# @rango-dev/provider-safe
+# @samo-dev/provider-safe

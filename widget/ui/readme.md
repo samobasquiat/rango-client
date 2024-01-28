@@ -1,4 +1,4 @@
-# @rango-dev/ui
+# @samo-dev/ui
 
 ### Icons
 

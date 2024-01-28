@@ -1,1 +1,1 @@
-# @rango-dev/provider-brave
+# @samo-dev/provider-brave

@@ -1,1 +1,1 @@
-# @rango-dev/provider-taho
+# @samo-dev/provider-taho

@@ -1,1 +1,1 @@
-# @rango-dev/provider-frontier
+# @samo-dev/provider-frontier

@@ -5,7 +5,7 @@ import {
   Radio,
   RadioRoot,
   Typography,
-} from '@rango-dev/ui';
+} from '@samo-dev/ui';
 import React from 'react';
 
 import { Layout, PageContainer } from '../components/Layout';

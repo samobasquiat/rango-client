@@ -1,6 +1,6 @@
 import type { PropTypes } from './StepSkeleton.types';
 
-import { ChainToken, Divider, NextIcon, Skeleton } from '@rango-dev/ui';
+import { ChainToken, Divider, NextIcon, Skeleton } from '@samo-dev/ui';
 import React from 'react';
 
 import { StepSeparator } from './QuoteSkeleton.styles';

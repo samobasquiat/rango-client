@@ -14,11 +14,11 @@ import {
   Modal,
   Typography,
   WalletIcon,
-} from '@rango-dev/ui';
+} from '@samo-dev/ui';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { RANGO_SWAP_BOX_ID } from '../../constants';
+import { WIDGET_UI_ID } from '../../constants';
 import { getQuoteErrorMessage } from '../../constants/errors';
 import { getQuoteUpdateWarningMessage } from '../../constants/warnings';
 import { useAppStore } from '../../store/AppStore';
@@ -228,7 +228,7 @@ export function ConfirmWalletsModal(props: PropTypes) {
   }, [connectedWallets.length]);
 
   const modalContainer = document.getElementById(
-    RANGO_SWAP_BOX_ID
+    WIDGET_UI_ID.SWAP_BOX_ID
   ) as HTMLDivElement;
 
   const navigate = useNavigate();

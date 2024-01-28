@@ -1,1 +1,1 @@
-# @rango-dev/provider-exodus
+# @samo-dev/provider-exodus

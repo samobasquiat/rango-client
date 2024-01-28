@@ -1,5 +1,5 @@
 {
-  "name": "@rango-dev/signer-cosmos",
+  "name": "@samo-dev/signer-cosmos",
   "version": "0.25.0",
   "license": "MIT",
   "type": "module",

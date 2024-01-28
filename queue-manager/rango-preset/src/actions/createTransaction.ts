@@ -1,4 +1,4 @@
-import { ExecuterActions } from '@rango-dev/queue-manager-core';
+import { ExecuterActions } from '@samo-dev/queue-manager-core';
 import {
   StepEventType,
   SwapActionTypes,
